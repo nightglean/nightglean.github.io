@@ -1,24 +1,64 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="utf-8" />
+<script>
+  (function(){
+    var d=document.documentElement,t=null;
+    try{t=localStorage.getItem('ng.theme')}catch(e){}
+    if(t!=='light'&&t!=='dark'){
+      t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';
+    }
+    d.setAttribute('data-theme',t);
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>没有这一页 · 长夜拾星</title>
 <meta name="description" content="长夜拾星 Nightglean Studio：这一页不存在。" />
-<meta name="color-scheme" content="dark" />
+<meta name="color-scheme" content="dark light" />
 <meta name="theme-color" content="#0c1210" />
 <meta name="robots" content="noindex" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c1210'/%3E%3Cg fill='%23c2a878'%3E%3Crect x='5' y='6' width='4' height='20'/%3E%3Crect x='11' y='6' width='4' height='20'/%3E%3Crect x='17' y='6' width='4' height='20'/%3E%3Crect x='23' y='6' width='4' height='20'/%3E%3C/g%3E%3C/svg%3E" />
 <style>
   :root{
-    --night:#0c1210;
-    --paper:#e7dece;
-    --paper-dim:#b3aa9b;
+    color-scheme:dark;
+    --bg:#0c1210;
+    --ink:#e7dece;
+    --dim:#b3aa9b;
+    --moss:#8d9d90;
     --bamboo:#c2a878;
     --cinnabar:#a8422b;
-    --moss:#8d9d90;
-    --serif:"Songti SC","Songti TC","Source Han Serif SC","Source Han Serif CN","Noto Serif SC","Noto Serif CJK SC","SimSun","STSong",serif;
+    --glow:rgba(194,168,120,.075);
+    --line:rgba(194,168,120,.2);
+    --thread:rgba(194,168,120,.45);
+    --slip-sheen:linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.03) 26%, rgba(255,255,255,.02) 62%, rgba(0,0,0,.46));
+    --slip-a:#1d2622; --slip-b:#141c19; --slip-c:#101715;
+    --void-bg:linear-gradient(180deg,#121917,#0f1513);
+    --void-border:rgba(194,168,120,.34);
+    --void-glyph:rgba(168,66,43,.8);
+    --btn-ink:#12100c; --btn-bg:#c2a878; --btn-bg-h:#d3ba8c;
+    --quiet-line:rgba(194,168,120,.35); --quiet-bg:rgba(194,168,120,.09);
+    --serif:"Songti SC","Songti TC","Source Han Serif SC","Source Han Serif CN","Noto Serif SC","Noto Serif CJK SC","AR PL UMing CN","STSong","SimSun",serif;
     --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif;
+  }
+  [data-theme="light"]{
+    color-scheme:light;
+    --bg:#f3ede1;
+    --ink:#1c2420;
+    --dim:#4f5a53;
+    --moss:#5a655d;
+    --bamboo:#8a6836;
+    --cinnabar:#9c3a24;
+    --glow:rgba(170,128,62,.11);
+    --line:rgba(120,92,48,.45);
+    --thread:rgba(120,92,48,.45);
+    --slip-sheen:linear-gradient(90deg, rgba(90,68,32,.16), rgba(255,255,255,.5) 26%, rgba(255,255,255,.34) 62%, rgba(90,68,32,.2));
+    --slip-a:#e6d8b8; --slip-b:#d9c8a3; --slip-c:#cdba95;
+    --void-bg:linear-gradient(180deg,#efe6d3,#e7dcc4);
+    --void-border:rgba(120,92,48,.5);
+    --void-glyph:rgba(156,58,36,.85);
+    --btn-ink:#f7f1e4; --btn-bg:#8a6836; --btn-bg-h:#6f5228;
+    --quiet-line:rgba(120,92,48,.4); --quiet-bg:rgba(120,92,48,.1);
   }
   *{box-sizing:border-box}
   body{
@@ -27,14 +67,15 @@
     display:grid;
     place-items:center;
     padding:clamp(1.5rem,6vw,4rem);
-    background:var(--night);
-    color:var(--paper);
+    background:var(--bg);
+    color:var(--ink);
     font-family:var(--serif);
     line-height:1.86;
-    background-image:radial-gradient(130% 72% at 50% -14%, rgba(194,168,120,.075), transparent 62%);
+    background-image:radial-gradient(130% 72% at 50% -14%, var(--glow), transparent 62%);
     background-repeat:no-repeat;
+    transition:background-color .25s ease,color .25s ease;
   }
-  a{color:var(--paper);text-decoration:none}
+  a{color:var(--ink);text-decoration:none}
   :focus-visible{outline:2px solid var(--bamboo);outline-offset:3px}
   .box{max-width:34rem;text-align:center}
   .slips{
@@ -43,21 +84,22 @@
   }
   .slips::before,.slips::after{
     content:"";position:absolute;left:0;right:0;height:1px;z-index:2;
-    background:linear-gradient(90deg,transparent,rgba(194,168,120,.45) 12%,rgba(194,168,120,.45) 88%,transparent);
+    background:linear-gradient(90deg,transparent,var(--thread) 12%,var(--thread) 88%,transparent);
   }
   .slips::before{top:22%}
   .slips::after{top:74%}
   .slip{
     position:relative;width:clamp(2.9rem,10vw,4.2rem);height:clamp(8.6rem,28vw,12rem);
-    background:linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.03) 26%, rgba(255,255,255,.02) 62%, rgba(0,0,0,.46)),linear-gradient(180deg,#1d2622,#141c19 46%,#101715);
-    border:1px solid rgba(194,168,120,.2);border-radius:2px;
+    background:var(--slip-sheen),linear-gradient(180deg,var(--slip-a),var(--slip-b) 46%,var(--slip-c));
+    border:1px solid var(--line);border-radius:2px;
+    transition:background .25s ease,border-color .25s ease;
   }
   .slip--void{
     display:grid;place-items:center;
-    border-style:dashed;border-color:rgba(194,168,120,.34);
-    background:linear-gradient(180deg,#121917,#0f1513);
+    border-style:dashed;border-color:var(--void-border);
+    background:var(--void-bg);
   }
-  .slip--void span{font-family:var(--serif);font-size:clamp(1.2rem,4vw,1.6rem);color:rgba(168,66,43,.8)}
+  .slip--void span{font-family:var(--serif);font-size:clamp(1.2rem,4vw,1.6rem);color:var(--void-glyph)}
   .code{
     margin:0;
     font-family:var(--sans);
@@ -70,13 +112,13 @@
   .acts{margin:2rem 0 0;display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
   .btn{
     display:inline-block;padding:.6rem 1.15rem;font-family:var(--sans);font-size:.85rem;
-    color:#12100c;background:var(--bamboo);border:1px solid var(--bamboo);border-radius:1px;
-    transition:background .22s ease;
+    color:var(--btn-ink);background:var(--btn-bg);border:1px solid var(--btn-bg);border-radius:1px;
+    transition:background-color .22s ease,border-color .22s ease,color .22s ease;
   }
-  .btn:hover{background:#d3ba8c}
-  .btn--quiet{color:var(--paper-dim);background:transparent;border-color:rgba(194,168,120,.35)}
-  .btn--quiet:hover{color:var(--paper);background:rgba(194,168,120,.09)}
-  .foot{margin:2.4rem 0 0;font-family:var(--sans);font-size:.75rem;color:var(--paper-dim)}
+  .btn:hover,.btn:focus-visible{background:var(--btn-bg-h);border-color:var(--btn-bg-h);color:var(--btn-ink)}
+  .btn--quiet{color:var(--dim);background:transparent;border-color:var(--quiet-line)}
+  .btn--quiet:hover,.btn--quiet:focus-visible{color:var(--ink);background:var(--quiet-bg);border-color:var(--bamboo)}
+  .foot{margin:2.4rem 0 0;font-family:var(--sans);font-size:.75rem;color:var(--dim)}
   @media (prefers-reduced-motion:reduce){*{transition-duration:.001ms !important}}
 </style>
 </head>
