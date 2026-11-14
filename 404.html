@@ -10,6 +10,15 @@
       t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';
     }
     d.setAttribute('data-theme',t);
+    var l=null;
+    try{l=localStorage.getItem('ng.lang')}catch(e){}
+    if(l!=='zh'&&l!=='tw'&&l!=='en'){
+      var n=(navigator.language||'zh').toLowerCase();
+      l=n.indexOf('zh')===0?(/hant|tw|hk|mo/.test(n)?'tw':'zh'):'en';
+    }
+    d.setAttribute('lang',l==='en'?'en':(l==='tw'?'zh-Hant':'zh-CN'));
+    d.setAttribute('data-lang',l);
+    if(l!=='zh'){d.classList.add('i18n-wait')}
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -61,6 +70,7 @@
     --quiet-line:rgba(120,92,48,.4); --quiet-bg:rgba(120,92,48,.1);
   }
   *{box-sizing:border-box}
+  .i18n-wait{visibility:hidden}
   body{
     margin:0;
     min-height:100svh;
@@ -131,13 +141,50 @@
       <li class="slip"></li>
     </ul>
     <p class="code">404</p>
-    <h1>这一片是空的，页面不在这里</h1>
-    <p class="lede">地址可能打错了，也可能是旧链接。四个项目、做事方式和构建记录都还在首页上。</p>
+    <h1 data-i18n="nf.title">这一片是空的，页面不在这里</h1>
+    <p class="lede" data-i18n="nf.lede">地址可能打错了，也可能是旧链接。四个项目、做事方式和构建记录都还在首页上。</p>
     <div class="acts">
-      <a class="btn" href="/">回首页</a>
-      <a class="btn btn--quiet" href="https://github.com/nightglean">去组织页</a>
+      <a class="btn" href="/" data-i18n="nf.home">回首页</a>
+      <a class="btn btn--quiet" href="https://github.com/nightglean" data-i18n="nf.org">去组织页</a>
     </div>
-    <p class="foot">长夜拾星 · 二〇二六</p>
+    <p class="foot" data-i18n="nf.foot">长夜拾星 · 二〇二六</p>
   </main>
+<script>
+(function(){
+  var dict={
+    zh:{},
+    tw:{
+      'nf.title':'這一片是空的，頁面不在這裡',
+      'nf.lede':'位址可能打錯了，也可能是舊連結。四個專案、做事方式和建構紀錄都還在首頁上。',
+      'nf.home':'回首頁',
+      'nf.org':'去組織頁',
+      'nf.foot':'長夜拾星 · 二〇二六',
+      '@title':'沒有這一頁 · 長夜拾星'
+    },
+    en:{
+      'nf.title':'This slip is blank — the page is not here',
+      'nf.lede':'The address may be mistyped, or the link is old. The four projects, how the work gets done, and the build log are all still on the home page.',
+      'nf.home':'Back to home',
+      'nf.org':'Organization',
+      'nf.foot':'Nightglean · 2026',
+      '@title':'Page not found · Nightglean'
+    }
+  };
+  var d=document.documentElement;
+  var lang=d.getAttribute('data-lang')||'zh';
+  var pack=dict[lang]||{};
+  var base={};
+  [].slice.call(document.querySelectorAll('[data-i18n]')).forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    base[k]=el.innerHTML;
+    if(pack[k]!==undefined) el.innerHTML=pack[k];
+  });
+  base['@title']=document.title;
+  document.title=pack['@title']||base['@title'];
+  var mc=document.querySelector('meta[name="theme-color"]');
+  if(mc) mc.setAttribute('content', d.getAttribute('data-theme')==='light'?'#f3ede1':'#0c1210');
+  d.classList.remove('i18n-wait');
+})();
+</script>
 </body>
 </html>
