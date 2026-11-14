@@ -1,11 +1,31 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark" data-lang="zh">
 <head>
 <meta charset="utf-8" />
+<script>
+  (function(){
+    var d=document.documentElement;
+    d.classList.add('js');
+    var t=null,l=null;
+    try{t=localStorage.getItem('ng.theme');l=localStorage.getItem('ng.lang')}catch(e){}
+    if(t!=='light'&&t!=='dark'){
+      t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';
+    }
+    d.setAttribute('data-theme',t);
+    if(l!=='zh'&&l!=='tw'&&l!=='en'){
+      var n=(navigator.language||'zh').toLowerCase();
+      l=n.indexOf('zh')===0?(/hant|tw|hk|mo/.test(n)?'tw':'zh'):'en';
+    }
+    d.setAttribute('data-lang',l);
+    // 语言不是简体时，先藏住页面，等字典应用完再显出来，避免中文闪一下
+    if(l!=='zh'){d.classList.add('i18n-wait')}
+    setTimeout(function(){d.classList.remove('i18n-wait');d.classList.add('i18n-ready')},320);
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>长夜拾星 · Nightglean Studio</title>
 <meta name="description" content="长夜拾星是一个很小的独立工作室，做 Android 应用与工程实验。原生实现，依赖克制，构建链路自己读得懂。" />
-<meta name="color-scheme" content="dark" />
+<meta name="color-scheme" content="dark light" />
 <meta name="theme-color" content="#0c1210" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="长夜拾星 · Nightglean Studio" />
@@ -14,49 +34,123 @@
 <meta name="twitter:card" content="summary" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c1210'/%3E%3Cg fill='%23c2a878'%3E%3Crect x='5' y='6' width='4' height='20'/%3E%3Crect x='11' y='6' width='4' height='20'/%3E%3Crect x='17' y='6' width='4' height='20'/%3E%3Crect x='23' y='6' width='4' height='20'/%3E%3C/g%3E%3C/svg%3E" />
 <style>
+  /* ---------- 一套语义变量，两副皮肤 ---------- */
   :root{
-    --night:#0c1210;
-    --night-raise:#121a17;
-    --night-edge:#1a2420;
-    --paper:#e7dece;
-    --paper-dim:#b3aa9b;
+    color-scheme:dark;
+
+    --bg:#0c1210;
+    --bg-soft:#121a17;
+    --bg-lift:#1a2420;
+    --ink:#e7dece;
+    --ink-dim:#b3aa9b;
+    --muted:#8d9d90;
     --bamboo:#c2a878;
-    --cinnabar:#a8422b;
-    --moss:#8d9d90;
+    --cinnabar:#d06a4a;
+
+    --line:1px solid rgba(194,168,120,.16);
+    --line-mid:1px solid rgba(194,168,120,.13);
+    --line-soft:1px solid rgba(231,222,206,.07);
+    --glow-a:rgba(194,168,120,.075);
+    --glow-b:rgba(141,157,144,.05);
+    --sel:rgba(194,168,120,.26);
+
+    --slip-sheen:linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.035) 26%, rgba(255,255,255,.02) 62%, rgba(0,0,0,.46));
+    --slip-a:#1d2622;
+    --slip-b:#141c19;
+    --slip-c:#101715;
+    --slip-edge:rgba(194,168,120,.2);
+    --slip-joint:rgba(12,18,16,.55);
+    --slip-glyph:#d6c9a9;
+    --slip-carve:0 1px 0 rgba(0,0,0,.85), 0 -1px 0 rgba(231,222,206,.1), 0 0 18px rgba(194,168,120,.12);
+    --slip-thread:rgba(194,168,120,.5);
+    --slip-hole:rgba(6,10,8,.95);
+
+    --seal-bg:rgba(168,66,43,.14);
+    --seal-line:rgba(168,66,43,.62);
+    --seal-ink:#e8c9b8;
+
+    --mast:rgba(12,18,16,.88);
+    --code:#cdbf9e;
+    --btn-ink:#12100c;
+    --btn-bg:#c2a878;
+    --btn-bg-h:#d3ba8c;
+    --btn-quiet-bg:rgba(194,168,120,.09);
 
     --serif:"Songti SC","Songti TC","Source Han Serif SC","Source Han Serif CN","Noto Serif CJK SC","Noto Serif SC","Noto Serif TC","AR PL UMing CN","AR PL SungtiL GB","STSong","SimSun",Georgia,"Iowan Old Style",Palatino,serif;
     --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 
-    --rule:1px solid rgba(194,168,120,.16);
-    --hair:1px solid rgba(231,222,206,.07);
     --measure:63ch;
     --gutter:clamp(1.25rem,5vw,3.5rem);
+  }
+
+  [data-theme="light"]{
+    color-scheme:light;
+
+    --bg:#f3ede1;
+    --bg-soft:#ece5d7;
+    --bg-lift:#e3dbc9;
+    --ink:#1c2420;
+    --ink-dim:#4f5a53;
+    --muted:#5a655d;
+    --bamboo:#7c5c2b;
+    --cinnabar:#9c3a24;
+
+    --line:1px solid rgba(120,92,48,.26);
+    --line-mid:1px solid rgba(120,92,48,.18);
+    --line-soft:1px solid rgba(28,36,32,.1);
+    --glow-a:rgba(170,128,62,.11);
+    --glow-b:rgba(90,110,95,.06);
+    --sel:rgba(160,120,60,.2);
+
+    --slip-sheen:linear-gradient(90deg, rgba(90,68,32,.16), rgba(255,255,255,.5) 26%, rgba(255,255,255,.34) 62%, rgba(90,68,32,.2));
+    --slip-a:#e6d8b8;
+    --slip-b:#d9c8a3;
+    --slip-c:#cdba95;
+    --slip-edge:rgba(120,92,48,.45);
+    --slip-joint:rgba(120,92,48,.26);
+    --slip-glyph:#4a3a1c;
+    --slip-carve:0 1px 0 rgba(255,255,255,.55), 0 -1px 0 rgba(74,58,28,.22);
+    --slip-thread:rgba(110,84,42,.55);
+    --slip-hole:rgba(60,46,22,.9);
+
+    --seal-bg:rgba(156,58,36,.1);
+    --seal-line:rgba(156,58,36,.6);
+    --seal-ink:#8f3520;
+
+    --mast:rgba(243,237,225,.9);
+    --code:#7a5a26;
+    --btn-ink:#f7f1e4;
+    --btn-bg:#8a6836;
+    --btn-bg-h:#6f5228;
+    --btn-quiet-bg:rgba(120,92,48,.1);
   }
 
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
   body{
     margin:0;
-    background:var(--night);
-    color:var(--paper);
+    background:var(--bg);
+    color:var(--ink);
     font-family:var(--serif);
     font-size:1rem;
     line-height:1.86;
     letter-spacing:.015em;
     text-rendering:optimizeLegibility;
     background-image:
-      radial-gradient(130% 72% at 50% -14%, rgba(194,168,120,.075), transparent 62%),
-      radial-gradient(90% 50% at 88% 108%, rgba(141,157,144,.05), transparent 70%);
+      radial-gradient(130% 72% at 50% -14%, var(--glow-a), transparent 62%),
+      radial-gradient(90% 50% at 88% 108%, var(--glow-b), transparent 70%);
     background-repeat:no-repeat;
+    transition:background-color .25s ease,color .25s ease;
   }
-  img{max-width:100%;height:auto}
-  a{color:var(--paper);text-decoration:none}
-  a:hover{color:#fff}
+  .js.i18n-wait body{opacity:0}
+  .js.i18n-ready body{opacity:1;transition:opacity .2s ease}
 
-  :focus-visible{
-    outline:2px solid var(--bamboo);
-    outline-offset:3px;
-  }
+  img{max-width:100%;height:auto}
+  a{color:var(--ink);text-decoration:none}
+  a:hover{color:var(--ink)}
+  ::selection{background:var(--sel);color:var(--ink)}
+  :focus-visible{outline:2px solid var(--bamboo);outline-offset:3px}
 
   .sr-only{
     position:absolute;width:1px;height:1px;
@@ -65,7 +159,7 @@
   }
   .skip{
     position:absolute;left:-999px;top:0;z-index:60;
-    background:var(--bamboo);color:#12100c;
+    background:var(--bamboo);color:var(--btn-ink);
     padding:.6rem 1rem;font-family:var(--sans);font-size:.9rem;
   }
   .skip:focus{left:.75rem;top:.75rem}
@@ -77,55 +171,103 @@
     padding:0 var(--gutter);
   }
 
-  /* ---------- 抬头：贴在顶部的一条简 ---------- */
+  /* ---------- 抬头 ---------- */
   .masthead{
     position:sticky;top:0;z-index:40;
-    display:flex;align-items:center;justify-content:space-between;
-    gap:1rem;
-    padding:.7rem var(--gutter);
-    background:rgba(12,18,16,.88);
+    background:var(--mast);
     backdrop-filter:blur(9px);
     -webkit-backdrop-filter:blur(9px);
-    border-bottom:1px solid rgba(194,168,120,.13);
+    border-bottom:var(--line);
+  }
+  .masthead__row{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:1rem;
+    padding:.6rem var(--gutter) .5rem;
   }
   .masthead__mark{
     margin:0;
     font-family:var(--serif);
     font-size:.95rem;
     letter-spacing:.18em;
-    color:var(--paper);
     white-space:nowrap;
   }
-  .masthead__mark span{
+  .masthead__mark .mark__latin{
     display:none;
     font-family:var(--sans);
-    font-size:.7rem;
+    font-size:.68rem;
     letter-spacing:.14em;
-    color:var(--moss);
+    color:var(--muted);
   }
+  html[data-lang="en"] .masthead__mark .mark__name{letter-spacing:.06em}
+
+  .tools{display:none;align-items:center;gap:.5rem}
+  .js .tools{display:flex}
+
+  .seg{
+    display:flex;
+    border:var(--line-mid);
+    border-radius:1px;
+    overflow:hidden;
+  }
+  .seg__btn{
+    appearance:none;
+    border:0;
+    background:transparent;
+    padding:.28rem .5rem;
+    font-family:var(--sans);
+    font-size:.76rem;
+    line-height:1.5;
+    color:var(--ink-dim);
+    cursor:pointer;
+    transition:background-color .2s ease,color .2s ease;
+  }
+  .seg__btn+.seg__btn{border-left:var(--line-mid)}
+  .seg__btn:hover{color:var(--ink);background:var(--btn-quiet-bg)}
+  .seg__btn[aria-pressed="true"]{color:var(--ink);background:var(--btn-quiet-bg)}
+
+  .tools__btn{
+    display:inline-flex;align-items:center;gap:.35rem;
+    appearance:none;
+    border:var(--line-mid);
+    background:transparent;
+    border-radius:1px;
+    padding:.28rem .55rem;
+    font-family:var(--sans);
+    font-size:.76rem;
+    line-height:1.5;
+    color:var(--ink-dim);
+    cursor:pointer;
+    transition:background-color .2s ease,color .2s ease;
+  }
+  .tools__btn:hover{color:var(--ink);background:var(--btn-quiet-bg)}
+  .tools__btn svg{width:.95rem;height:.95rem;display:block;fill:none;stroke:currentColor;stroke-width:1.5}
+  [data-theme="dark"] .i-sun{display:none}
+  [data-theme="light"] .i-moon{display:none}
+
   .masthead__nav{
-    display:flex;gap:.2rem;
+    display:flex;gap:.1rem;
+    padding:0 var(--gutter) .35rem;
     overflow-x:auto;
     scrollbar-width:none;
   }
   .masthead__nav::-webkit-scrollbar{display:none}
   .masthead__nav a{
-    padding:.35rem .55rem;
+    padding:.3rem .5rem;
     font-family:var(--sans);
-    font-size:.82rem;
-    color:var(--paper-dim);
+    font-size:.8rem;
+    color:var(--ink-dim);
     white-space:nowrap;
     border-bottom:1px solid transparent;
     transition:color .2s ease,border-color .2s ease;
   }
   .masthead__nav a:hover,.masthead__nav a:focus-visible{
-    color:var(--paper);
+    color:var(--ink);
     border-bottom-color:var(--bamboo);
   }
 
   /* ---------- 竹简 ---------- */
   .hero{
-    padding:clamp(2.6rem,7vh,4.6rem) 0 0;
+    padding:clamp(2.4rem,7vh,4.4rem) 0 0;
     text-align:center;
   }
   .slips{
@@ -138,13 +280,12 @@
     padding:0;
     position:relative;
   }
-  /* 编绳：两道，穿过四片 */
   .slips::before,
   .slips::after{
     content:"";
     position:absolute;left:0;right:0;
     height:1px;
-    background:linear-gradient(90deg,transparent,rgba(194,168,120,.5) 12%,rgba(194,168,120,.5) 88%,transparent);
+    background:linear-gradient(90deg,transparent,var(--slip-thread) 12%,var(--slip-thread) 88%,transparent);
     z-index:2;
     pointer-events:none;
   }
@@ -157,29 +298,26 @@
     height:clamp(9.4rem,30vw,14.5rem);
     display:grid;
     place-items:center;
-    background:
-      linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.035) 26%, rgba(255,255,255,.02) 62%, rgba(0,0,0,.46)),
-      linear-gradient(180deg, #1d2622, #141c19 46%, #101715);
-    border:1px solid rgba(194,168,120,.2);
+    background:var(--slip-sheen),linear-gradient(180deg,var(--slip-a),var(--slip-b) 46%,var(--slip-c));
+    border:1px solid var(--slip-edge);
     border-radius:2px;
-    box-shadow:inset 0 0 0 1px rgba(231,222,206,.025);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+    transition:background .25s ease,border-color .25s ease;
   }
-  /* 竹节：两道横向刻痕 */
   .slip::before{
     content:"";
     position:absolute;inset:0;
     background:
-      linear-gradient(180deg,transparent 0 27%,rgba(12,18,16,.55) 27.4%,transparent 28.2%),
-      linear-gradient(180deg,transparent 0 79%,rgba(12,18,16,.5) 79.4%,transparent 80.2%);
+      linear-gradient(180deg,transparent 0 27%,var(--slip-joint) 27.4%,transparent 28.2%),
+      linear-gradient(180deg,transparent 0 79%,var(--slip-joint) 79.4%,transparent 80.2%);
     pointer-events:none;
   }
-  /* 穿孔：编绳处的两个小孔 */
   .slip::after{
     content:"";
     position:absolute;inset:0;
     background:
-      radial-gradient(circle at 50% 22%, rgba(6,10,8,.95) 0 3.2px, transparent 3.4px),
-      radial-gradient(circle at 50% 74%, rgba(6,10,8,.95) 0 3.2px, transparent 3.4px);
+      radial-gradient(circle at 50% 22%, var(--slip-hole) 0 3.2px, transparent 3.4px),
+      radial-gradient(circle at 50% 74%, var(--slip-hole) 0 3.2px, transparent 3.4px);
     pointer-events:none;
   }
   .slip__glyph{
@@ -188,17 +326,15 @@
     font-family:var(--serif);
     font-size:clamp(1.85rem,6.2vw,3rem);
     line-height:1;
-    color:#d6c9a9;
-    text-shadow:
-      0 1px 0 rgba(0,0,0,.85),
-      0 -1px 0 rgba(231,222,206,.10),
-      0 0 18px rgba(194,168,120,.12);
+    color:var(--slip-glyph);
+    text-shadow:var(--slip-carve);
     opacity:.94;
     transform:translateY(1px);
+    transition:color .25s ease;
   }
 
   .hero__studio{
-    margin:2.15rem 0 0;
+    margin:2.05rem 0 0;
     font-family:var(--sans);
     font-size:clamp(.7rem,2.2vw,.78rem);
     letter-spacing:.42em;
@@ -210,19 +346,17 @@
     font-family:var(--serif);
     font-size:clamp(1.05rem,2.9vw,1.28rem);
     letter-spacing:.04em;
-    color:var(--paper);
   }
   .hero__lede{
-    margin:1.5rem auto 0;
+    margin:1.4rem auto 0;
     max-width:35rem;
-    color:var(--moss);
+    color:var(--muted);
     font-size:clamp(.95rem,2.6vw,1rem);
-    text-align:left;
     text-align:center;
   }
-  .hero__lede strong{color:var(--paper);font-weight:500}
+  .hero__lede strong{color:var(--ink);font-weight:500}
   .hero__acts{
-    margin:2rem 0 0;
+    margin:1.9rem 0 0;
     display:flex;
     justify-content:center;
     flex-wrap:wrap;
@@ -234,45 +368,40 @@
     font-family:var(--sans);
     font-size:.86rem;
     letter-spacing:.05em;
-    color:#12100c;
-    background:var(--bamboo);
-    border:1px solid var(--bamboo);
+    color:var(--btn-ink);
+    background:var(--btn-bg);
+    border:1px solid var(--btn-bg);
     border-radius:1px;
-    transition:background .22s ease,color .22s ease;
+    transition:background-color .22s ease,border-color .22s ease;
   }
-  .btn:hover,.btn:focus-visible{background:#d3ba8c;color:#0c1210}
+  .btn:hover,.btn:focus-visible{background:var(--btn-bg-h);border-color:var(--btn-bg-h);color:var(--btn-ink)}
   .btn--quiet{
-    color:var(--paper-dim);
+    color:var(--ink-dim);
     background:transparent;
-    border-color:rgba(194,168,120,.35);
+    border-color:var(--slip-edge);
   }
   .btn--quiet:hover,.btn--quiet:focus-visible{
-    color:var(--paper);
-    background:rgba(194,168,120,.09);
+    color:var(--ink);
+    background:var(--btn-quiet-bg);
+    border-color:var(--bamboo);
   }
 
-  /* 案上三笔账：可核对的数字 */
   .facts{
-    margin:clamp(2.6rem,6vh,3.6rem) 0 0;
+    margin:clamp(2.4rem,6vh,3.4rem) 0 0;
     padding:1.15rem 0;
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:0;
-    border-top:var(--rule);
-    border-bottom:var(--rule);
+    border-top:var(--line);
+    border-bottom:var(--line);
     text-align:left;
   }
-  .facts__item{
-    padding:.15rem 1.1rem;
-    border-left:1px solid rgba(194,168,120,.13);
-  }
+  .facts__item{padding:.15rem 1.1rem;border-left:var(--line-mid)}
   .facts__item:first-child{padding-left:0;border-left:0}
   .facts__num{
     display:block;
     font-family:var(--serif);
     font-size:clamp(1.5rem,5vw,1.9rem);
     line-height:1.2;
-    color:var(--paper);
     font-variant-numeric:tabular-nums;
   }
   .facts__label{
@@ -281,11 +410,11 @@
     font-family:var(--sans);
     font-size:.78rem;
     line-height:1.6;
-    color:var(--moss);
+    color:var(--muted);
   }
 
-  /* ---------- 章节骨架 ---------- */
-  .sec{padding-top:clamp(3.6rem,8vh,5.4rem)}
+  /* ---------- 章节 ---------- */
+  .sec{padding-top:clamp(3.4rem,8vh,5.2rem);scroll-margin-top:6rem}
   .sec__head{
     display:flex;
     align-items:baseline;
@@ -293,7 +422,7 @@
     gap:1rem 1.5rem;
     flex-wrap:wrap;
     padding-bottom:.8rem;
-    border-bottom:var(--rule);
+    border-bottom:var(--line);
   }
   .sec__title{
     margin:0;
@@ -307,13 +436,13 @@
     margin:0;
     font-family:var(--sans);
     font-size:.8rem;
-    color:var(--paper-dim);
+    color:var(--ink-dim);
     letter-spacing:.02em;
   }
   .sec__lede{
     margin:1.3rem 0 0;
     max-width:var(--measure);
-    color:var(--moss);
+    color:var(--muted);
   }
 
   /* ---------- 项目卷宗 ---------- */
@@ -323,7 +452,7 @@
     grid-template-columns:auto 1fr;
     gap:1.15rem;
     padding:1.9rem 0 2rem;
-    border-bottom:var(--hair);
+    border-bottom:var(--line-soft);
   }
   .dossier:last-child{border-bottom:0}
   .seal{
@@ -334,9 +463,9 @@
     font-family:var(--serif);
     font-size:1.12rem;
     line-height:1;
-    color:#e8c9b8;
-    background:rgba(168,66,43,.14);
-    border:1px solid rgba(168,66,43,.62);
+    color:var(--seal-ink);
+    background:var(--seal-bg);
+    border:1px solid var(--seal-line);
     border-radius:1px;
     transform:translateY(.2rem);
     user-select:none;
@@ -358,15 +487,11 @@
   .dossier__name a:hover,.dossier__name a:focus-visible{background-size:100% 1px}
   .dossier__repo{
     margin:.15rem 0 0;
-    font-family:var(--sans);
+    font-family:var(--mono);
     font-size:.76rem;
-    color:var(--paper-dim);
-    letter-spacing:.02em;
+    color:var(--ink-dim);
   }
-  .dossier__what{
-    margin:.7rem 0 0;
-    max-width:var(--measure);
-  }
+  .dossier__what{margin:.7rem 0 0;max-width:var(--measure)}
   .dossier__spec{
     margin:1rem 0 0;
     display:grid;
@@ -378,44 +503,44 @@
   .dossier__spec dt{
     font-family:var(--sans);
     font-size:.76rem;
-    color:var(--paper-dim);
+    color:var(--ink-dim);
     letter-spacing:.06em;
     padding-top:.16rem;
   }
-  .dossier__spec dd{margin:0;color:var(--moss)}
-  .dossier__spec code{
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  .dossier__spec dd{margin:0;color:var(--muted)}
+  .dossier__spec code,.chain__aside code,.log code{
+    font-family:var(--mono);
     font-size:.86em;
-    color:#cdbf9e;
+    color:var(--code);
   }
 
-  /* ---------- 构建链路：真序列 ---------- */
+  /* ---------- 构建链路 ---------- */
   .chain{
     list-style:none;
     margin:1.8rem 0 0;
     padding:0;
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:0;
-    border-top:var(--hair);
+    border-top:var(--line-soft);
   }
   .chain__item{
     position:relative;
     padding:1.15rem 1rem 1.2rem 0;
-    border-bottom:var(--hair);
+    border-bottom:var(--line-soft);
   }
   .chain__item:not(:last-child)::after{
     content:"";
     position:absolute;
     right:.55rem;top:1.7rem;
     width:.5rem;height:.5rem;
-    border-top:1px solid rgba(194,168,120,.55);
-    border-right:1px solid rgba(194,168,120,.55);
+    border-top:1px solid var(--bamboo);
+    border-right:1px solid var(--bamboo);
+    opacity:.6;
     transform:rotate(45deg);
   }
   .chain__index{
     display:block;
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-family:var(--mono);
     font-size:.72rem;
     color:var(--cinnabar);
     letter-spacing:.1em;
@@ -423,23 +548,23 @@
   .chain__tool{
     display:block;
     margin:.3rem 0 0;
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-family:var(--mono);
     font-size:1rem;
-    color:#d8cbaa;
+    color:var(--code);
   }
   .chain__what{
     margin:.4rem 0 0;
     font-size:.86rem;
     line-height:1.7;
-    color:var(--moss);
+    color:var(--muted);
     max-width:19ch;
   }
   .chain__aside{
     margin:1.1rem 0 0;
     padding-left:.9rem;
-    border-left:2px solid rgba(194,168,120,.35);
+    border-left:2px solid var(--slip-edge);
     font-size:.9rem;
-    color:var(--paper-dim);
+    color:var(--ink-dim);
     max-width:var(--measure);
   }
 
@@ -448,28 +573,26 @@
     margin:0;
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:0;
-    border-top:var(--hair);
+    border-top:var(--line-soft);
   }
   .creed__row{
     padding:1.5rem 2rem 1.6rem 0;
-    border-bottom:var(--hair);
+    border-bottom:var(--line-soft);
   }
   .creed__row:nth-child(even){
     padding-left:2rem;
-    border-left:1px solid rgba(231,222,206,.05);
+    border-left:var(--line-soft);
   }
   .creed__term{
     margin:0;
     font-family:var(--serif);
     font-size:1.06rem;
-    color:var(--paper);
     letter-spacing:.06em;
   }
   .creed__desc{
     margin:.5rem 0 0;
     font-size:.92rem;
-    color:var(--moss);
+    color:var(--muted);
     max-width:34ch;
   }
 
@@ -484,24 +607,20 @@
     text-align:left;
     vertical-align:top;
     padding:.95rem .9rem .95rem 0;
-    border-bottom:var(--hair);
+    border-bottom:var(--line-soft);
   }
   .log th{
     font-family:var(--sans);
     font-size:.76rem;
     font-weight:400;
     letter-spacing:.08em;
-    color:var(--paper-dim);
+    color:var(--ink-dim);
     white-space:nowrap;
     padding-top:1.15rem;
-    border-bottom:1px solid rgba(194,168,120,.16);
+    border-bottom:var(--line);
   }
-  .log td:first-child{
-    width:11rem;
-    color:var(--paper);
-    white-space:nowrap;
-  }
-  .log td{color:var(--moss)}
+  .log td:first-child{width:11rem;color:var(--ink);white-space:nowrap}
+  .log td{color:var(--muted)}
 
   /* ---------- 构建状态 ---------- */
   .status{
@@ -513,33 +632,34 @@
   .status th,.status td{
     text-align:left;
     padding:.8rem .9rem .8rem 0;
-    border-bottom:var(--hair);
+    border-bottom:var(--line-soft);
   }
   .status th{
     font-family:var(--sans);
     font-size:.76rem;
     font-weight:400;
     letter-spacing:.08em;
-    color:var(--paper-dim);
-    border-bottom:1px solid rgba(194,168,120,.16);
+    color:var(--ink-dim);
+    border-bottom:var(--line);
   }
-  .status td{color:var(--moss)}
+  .status td{color:var(--muted)}
   .status code{
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-family:var(--mono);
     font-size:.86em;
-    color:#cdbf9e;
+    color:var(--code);
   }
-  .status a{color:var(--paper-dim);border-bottom:1px solid rgba(194,168,120,.3)}
-  .status a:hover{color:var(--paper);border-bottom-color:var(--bamboo)}
+  .status a{color:var(--ink-dim);border-bottom:1px solid var(--slip-edge)}
+  .status a:hover{color:var(--ink);border-bottom-color:var(--bamboo)}
 
   /* ---------- 关于这一页 ---------- */
   .colophon{
-    margin-top:clamp(3.6rem,8vh,5.4rem);
+    margin-top:clamp(3.4rem,8vh,5.2rem);
     padding:2.4rem 0 0;
-    border-top:var(--rule);
+    border-top:var(--line);
     display:grid;
     grid-template-columns:1.15fr 1fr;
     gap:clamp(1.6rem,4vw,3.6rem);
+    scroll-margin-top:6rem;
   }
   .colophon__title{
     margin:0 0 .9rem;
@@ -549,7 +669,8 @@
     letter-spacing:.12em;
     color:var(--bamboo);
   }
-  .colophon p{margin:.7rem 0 0;font-size:.92rem;color:var(--moss);max-width:36ch}
+  .colophon p{margin:.7rem 0 0;font-size:.92rem;color:var(--muted);max-width:36ch}
+  .colophon code{font-family:var(--mono);font-size:.88em;color:var(--code)}
   .links{list-style:none;margin:0;padding:0}
   .links li{
     display:flex;
@@ -557,16 +678,16 @@
     justify-content:space-between;
     gap:1rem;
     padding:.7rem 0;
-    border-bottom:var(--hair);
+    border-bottom:var(--line-soft);
   }
-  .links li span{font-family:var(--sans);font-size:.78rem;color:var(--paper-dim)}
+  .links li span{font-family:var(--sans);font-size:.78rem;color:var(--ink-dim)}
   .links li a{font-size:.94rem;border-bottom:1px solid transparent}
   .links li a:hover{border-bottom-color:var(--bamboo)}
 
   .foot{
     margin-top:clamp(2.4rem,6vh,3.4rem);
     padding:1.6rem 0 3rem;
-    border-top:var(--hair);
+    border-top:var(--line-soft);
     display:flex;
     justify-content:space-between;
     align-items:baseline;
@@ -574,12 +695,12 @@
     flex-wrap:wrap;
     font-family:var(--sans);
     font-size:.78rem;
-    color:var(--paper-dim);
+    color:var(--ink-dim);
   }
   .foot__sig{margin:0;font-family:var(--serif);letter-spacing:.2em;color:var(--bamboo)}
   .foot__note{margin:0;max-width:44ch;line-height:1.7}
 
-  /* ---------- 入场：一次编排 ---------- */
+  /* ---------- 入场 ---------- */
   .slip{animation:lay .9s cubic-bezier(.2,.72,.18,1) both}
   .slip:nth-child(1){animation-delay:.04s}
   .slip:nth-child(2){animation-delay:.14s}
@@ -605,7 +726,19 @@
 
   /* ---------- 响应式 ---------- */
   @media (min-width:40rem){
-    .masthead__mark span{display:inline;margin-left:.7rem}
+    .masthead__mark .mark__latin{display:inline;margin-left:.7rem}
+  }
+  html[data-lang="en"] .masthead__mark .mark__latin{display:none !important}
+
+  /* 触屏：按钮可见面积不变，可点热区补到 44px 高 */
+  @media (pointer:coarse){
+    .seg__btn,.tools__btn{position:relative}
+    .seg__btn{min-width:2.25rem}
+    .seg__btn::after,.tools__btn::after{
+      content:"";
+      position:absolute;
+      left:0;right:0;top:-9px;bottom:-9px;
+    }
   }
 
   @media (max-width:56rem){
@@ -618,17 +751,19 @@
 
   @media (max-width:40rem){
     body{line-height:1.8}
-    .hero{padding-top:2.1rem}
-    .masthead{padding:.55rem var(--gutter)}
-    .masthead__nav a{font-size:.8rem;padding:.3rem .45rem}
+    .masthead__row{padding:.35rem var(--gutter);gap:.5rem}
+    .masthead__mark{font-size:.88rem;letter-spacing:.12em}
+    .seg__btn,.tools__btn{
+      min-height:2.75rem;
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:.2rem .55rem;font-size:.75rem;
+    }
+    .seg__btn,.tools__btn{min-width:2.75rem}
+    .tools__btn span{display:none}
     .facts{grid-template-columns:1fr;padding:.4rem 0}
     .facts__item{
-      display:flex;
-      align-items:baseline;
-      gap:.8rem;
-      padding:.7rem 0;
-      border-left:0;
-      border-top:1px solid rgba(231,222,206,.06);
+      display:flex;align-items:baseline;gap:.8rem;
+      padding:.7rem 0;border-left:0;border-top:var(--line-soft);
     }
     .facts__item:first-child{border-top:0}
     .facts__num{font-size:1.35rem}
@@ -662,27 +797,50 @@
       transition-duration:.001ms !important;
     }
   }
+
+  @media print{
+    body{background:#fff;color:#000}
+    .masthead,.hero__acts,.tools,.skip{display:none}
+    .slip{border-color:#000;background:#fff}
+    .slip__glyph{color:#000;text-shadow:none}
+    .sec{padding-top:1.6rem;break-inside:avoid}
+    a[href^="http"]::after{content:" (" attr(href) ")";font-size:.72em;color:#444}
+  }
 </style>
 </head>
 <body>
-<a class="skip" href="#main">跳到正文</a>
+<a class="skip" href="#main" data-i18n="skip">跳到正文</a>
 
 <header class="masthead">
-  <p class="masthead__mark">长夜拾星<span>NIGHTGLEAN STUDIO</span></p>
-  <nav class="masthead__nav" aria-label="页面章节">
-    <a href="#work">项目</a>
-    <a href="#chain">构建</a>
-    <a href="#way">做法</a>
-    <a href="#now">最近</a>
-    <a href="#status">状态</a>
-    <a href="#about">这一页</a>
+  <div class="masthead__row">
+    <p class="masthead__mark"><span class="mark__name" data-i18n="mark">长夜拾星</span><span class="mark__latin">NIGHTGLEAN STUDIO</span></p>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="语言" data-i18n-aria="tools.lang">
+        <button type="button" class="seg__btn" data-lang-btn="zh" aria-pressed="true" lang="zh-CN">简</button>
+        <button type="button" class="seg__btn" data-lang-btn="tw" aria-pressed="false" lang="zh-Hant">繁</button>
+        <button type="button" class="seg__btn" data-lang-btn="en" aria-pressed="false" lang="en">EN</button>
+      </div>
+      <button type="button" class="tools__btn" data-theme-toggle aria-pressed="false" aria-label="切换深浅色" data-i18n-aria="theme.aria">
+        <svg class="i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3 5.5 5.5 0 1 0 13 9.5Z"/></svg>
+        <svg class="i-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.1 3.1l1.1 1.1M11.8 11.8l1.1 1.1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1"/></svg>
+        <span class="tools__label" data-i18n="theme.dark">深色</span>
+      </button>
+    </div>
+  </div>
+  <nav class="masthead__nav" aria-label="页面章节" data-i18n-aria="nav.label">
+    <a href="#work" data-i18n="nav.work">项目</a>
+    <a href="#chain" data-i18n="nav.chain">构建</a>
+    <a href="#way" data-i18n="nav.way">做法</a>
+    <a href="#now" data-i18n="nav.now">最近</a>
+    <a href="#status" data-i18n="nav.status">状态</a>
+    <a href="#about" data-i18n="nav.about">这一页</a>
   </nav>
 </header>
 
 <main id="main" class="wrap">
 
   <section class="hero" aria-labelledby="site-title">
-    <h1 id="site-title" class="sr-only">长夜拾星 Nightglean Studio</h1>
+    <h1 id="site-title" class="sr-only" data-i18n="h1">长夜拾星 Nightglean Studio</h1>
 
     <ul class="slips" aria-hidden="true">
       <li class="slip"><span class="slip__glyph">长</span></li>
@@ -692,59 +850,50 @@
     </ul>
 
     <p class="hero__studio">NIGHTGLEAN STUDIO</p>
-    <p class="hero__motto">独立开发，原生实现，先把「能不能不这样做」问一遍</p>
-    <p class="hero__lede">
-      一个很小的独立工作室，做 Android 应用与工程实验。不追框架，不堆依赖，
-      <strong>尽量让每一条构建链路都能被自己读懂</strong>。这里放的四个项目，都还在自己手上改。
-    </p>
+    <p class="hero__motto" data-i18n="hero.motto">独立开发，原生实现，先把「能不能不这样做」问一遍</p>
+    <p class="hero__lede" data-i18n="hero.lede">一个很小的独立工作室，做 Android 应用与工程实验。不追框架，不堆依赖，<strong>尽量让每一条构建链路都能被自己读懂</strong>。这里放的四个项目，都还在自己手上改。</p>
 
     <div class="hero__acts">
-      <a class="btn" href="#work">看四个项目</a>
-      <a class="btn btn--quiet" href="#way">读做事方式</a>
+      <a class="btn" href="#work" data-i18n="hero.cta1">看四个项目</a>
+      <a class="btn btn--quiet" href="#way" data-i18n="hero.cta2">读做事方式</a>
     </div>
 
     <dl class="facts">
       <div class="facts__item">
         <span class="facts__num">4</span>
-        <span class="facts__label">在维护的项目<br>Android、Rust、规范与文本</span>
+        <span class="facts__label" data-i18n="facts.1">在维护的项目<br>Android、Rust、规范与文本</span>
       </div>
       <div class="facts__item">
         <span class="facts__num">5</span>
-        <span class="facts__label">条 CI 工作流<br>构建、回归、lint 都在跑</span>
+        <span class="facts__label" data-i18n="facts.2">条 CI 工作流<br>构建、回归、lint 都在跑</span>
       </div>
       <div class="facts__item">
         <span class="facts__num">0</span>
-        <span class="facts__label">这一页的构建步骤<br>一个 HTML 文件，直接托管</span>
+        <span class="facts__label" data-i18n="facts.3">这一页的外部请求<br>字体、脚本、图片都不外借</span>
       </div>
     </dl>
   </section>
 
   <section class="sec" id="work" aria-labelledby="work-title">
     <div class="sec__head">
-      <h2 class="sec__title" id="work-title">项目</h2>
-      <p class="sec__note">四个仓库，目前都在个人账号下维护</p>
+      <h2 class="sec__title" id="work-title" data-i18n="work.title">项目</h2>
+      <p class="sec__note" data-i18n="work.note">四个仓库，目前都在个人账号下维护</p>
     </div>
-    <p class="sec__lede">
-      四个项目分别对应四种不同的克制：不引构建系统的 Android 应用、补平台缺口的安全库、
-      只出证据不动手的磁盘工具、能被程序检查的一份规范。
-    </p>
+    <p class="sec__lede" data-i18n="work.lede">四个项目分别对应四种不同的克制：不引构建系统的 Android 应用、补平台缺口的安全库、只出证据不动手的磁盘工具、能被程序检查的一份规范。</p>
 
     <ul class="dossiers">
       <li>
         <article class="dossier">
           <span class="seal" aria-hidden="true">拾</span>
           <div>
-            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/onestar">拾光 OneStar</a></h3>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/onestar" data-i18n="p1.name">拾光 OneStar</a></h3>
             <p class="dossier__repo">yangyang2857-rgb/onestar</p>
-            <p class="dossier__what">
-              一天记一笔心情，累积成一片手绘星图。桌面小组件、心情曲线、年度长图海报，
-              三样东西都指向同一件事：让一年的情绪有个能看见的形状。
-            </p>
+            <p class="dossier__what" data-i18n="p1.what">一天记一笔心情，累积成一片手绘星图。桌面小组件、心情曲线、年度长图海报，三样东西都指向同一件事：让一年的情绪有个能看见的形状。</p>
             <dl class="dossier__spec">
-              <dt>语言</dt><dd>Java，JNI 层用 <code>zig cc</code> 编译</dd>
-              <dt>构建</dt><dd><code>aapt2 + javac + d8 + apksigner</code> 手工串起，没有 Gradle</dd>
-              <dt>依赖</dt><dd>无 AndroidX，无第三方 SDK，界面全部 Canvas 自绘</dd>
-              <dt>状态</dt><dd>0.12.x 迭代中，targetSdk 37</dd>
+              <dt data-i18n="spec.lang">语言</dt><dd data-i18n="p1.lang">Java，JNI 层用 <code>zig cc</code> 编译</dd>
+              <dt data-i18n="spec.build">构建</dt><dd data-i18n="p1.build"><code>aapt2 + javac + d8 + apksigner</code> 手工串起，没有 Gradle</dd>
+              <dt data-i18n="spec.deps">依赖</dt><dd data-i18n="p1.deps">无 AndroidX，无第三方 SDK，界面全部 Canvas 自绘</dd>
+              <dt data-i18n="spec.state">状态</dt><dd data-i18n="p1.state">0.12.x 迭代中，targetSdk 37</dd>
             </dl>
           </div>
         </article>
@@ -753,17 +902,14 @@
         <article class="dossier">
           <span class="seal" aria-hidden="true">护</span>
           <div>
-            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/appfunction-guard">AppFunction Guard</a></h3>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/appfunction-guard" data-i18n="p2.name">AppFunction Guard</a></h3>
             <p class="dossier__repo">yangyang2857-rgb/appfunction-guard</p>
-            <p class="dossier__what">
-              Android 16 的 AppFunctions 让 AI Agent 能直接调用 App 内的函数。
-              这个库补上平台没给的逐函数授权、限流、参数校验与审计链路。
-            </p>
+            <p class="dossier__what" data-i18n="p2.what">Android 16 的 AppFunctions 让 AI Agent 能直接调用 App 内的函数。这个库补上平台没给的逐函数授权、限流、参数校验与审计链路。</p>
             <dl class="dossier__spec">
-              <dt>语言</dt><dd>Kotlin 2.2</dd>
-              <dt>接入</dt><dd>单一拦截点插在平台与业务逻辑之间，业务代码改动可收敛到一处</dd>
-              <dt>依赖</dt><dd><code>minSdk 26</code>，MIT 许可</dd>
-              <dt>状态</dt><dd>alpha，接口仍在调整</dd>
+              <dt data-i18n="spec.lang">语言</dt><dd data-i18n="p2.lang">Kotlin 2.2</dd>
+              <dt data-i18n="spec.how">接入</dt><dd data-i18n="p2.how">单一拦截点插在平台与业务逻辑之间，业务代码改动可收敛到一处</dd>
+              <dt data-i18n="spec.deps">依赖</dt><dd data-i18n="p2.deps"><code>minSdk 26</code>，MIT 许可</dd>
+              <dt data-i18n="spec.state">状态</dt><dd data-i18n="p2.state">alpha，接口仍在调整</dd>
             </dl>
           </div>
         </article>
@@ -772,17 +918,14 @@
         <article class="dossier">
           <span class="seal" aria-hidden="true">蜕</span>
           <div>
-            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/moltdisk">moltdisk 蜕冗</a></h3>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/moltdisk" data-i18n="p3.name">moltdisk 蜕冗</a></h3>
             <p class="dossier__repo">yangyang2857-rgb/moltdisk</p>
-            <p class="dossier__what">
-              磁盘体检工具：找出能由源码重建的构建产物，算体积、排序，
-              并给出「凭什么可删」的证据。它自己不删任何东西。
-            </p>
+            <p class="dossier__what" data-i18n="p3.what">磁盘体检工具：找出能由源码重建的构建产物，算体积、排序，并给出「凭什么可删」的证据。它自己不删任何东西。</p>
             <dl class="dossier__spec">
-              <dt>语言</dt><dd>Rust 2021，MSRV 1.80</dd>
-              <dt>能做</dt><dd>审计报告与 <code>why</code> 子命令，逐条说明重建依据</dd>
-              <dt>不能做</dt><dd>没有删除代码路径，传 <code>-y</code> 直接报错</dd>
-              <dt>状态</dt><dd>v0.1.0，MIT 许可</dd>
+              <dt data-i18n="spec.lang">语言</dt><dd data-i18n="p3.lang">Rust 2021，MSRV 1.80</dd>
+              <dt data-i18n="spec.can">能做</dt><dd data-i18n="p3.can">审计报告与 <code>why</code> 子命令，逐条说明重建依据</dd>
+              <dt data-i18n="spec.cant">不能做</dt><dd data-i18n="p3.cant">没有删除代码路径，传 <code>-y</code> 直接报错</dd>
+              <dt data-i18n="spec.state">状态</dt><dd data-i18n="p3.state">v0.1.0，MIT 许可</dd>
             </dl>
           </div>
         </article>
@@ -791,16 +934,13 @@
         <article class="dossier">
           <span class="seal" aria-hidden="true">格</span>
           <div>
-            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec">Marvis · Persona Spec</a></h3>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec" data-i18n="p4.name">Marvis · Persona Spec</a></h3>
             <p class="dossier__repo">yangyang2857-rgb/marvis-persona-spec</p>
-            <p class="dossier__what">
-              一份能被程序检查的人格规范：30 格台词位、20 条禁句、一个能跑的 lint 脚本、
-              10 条基准测试，外加 Fault Bloom 视觉系统。
-            </p>
+            <p class="dossier__what" data-i18n="p4.what">一份能被程序检查的人格规范：30 格台词位、20 条禁句、一个能跑的 lint 脚本、10 条基准测试，外加 Fault Bloom 视觉系统。</p>
             <dl class="dossier__spec">
-              <dt>组成</dt><dd>Markdown 规范 + Python lint，规范与检查脚本同一个仓库</dd>
-              <dt>接入</dt><dd>CI 里两段式：先出灰阶报告，再上门禁</dd>
-              <dt>状态</dt><dd>v3</dd>
+              <dt data-i18n="spec.parts">组成</dt><dd data-i18n="p4.parts">Markdown 规范 + Python lint，规范与检查脚本同一个仓库</dd>
+              <dt data-i18n="spec.how">接入</dt><dd data-i18n="p4.how">CI 里两段式：先出灰阶报告，再上门禁</dd>
+              <dt data-i18n="spec.state">状态</dt><dd data-i18n="p4.state">v3</dd>
             </dl>
           </div>
         </article>
@@ -810,92 +950,89 @@
 
   <section class="sec" id="chain" aria-labelledby="chain-title">
     <div class="sec__head">
-      <h2 class="sec__title" id="chain-title">一次构建经过哪四步</h2>
-      <p class="sec__note">以 OneStar 的命令行构建为例</p>
+      <h2 class="sec__title" id="chain-title" data-i18n="chain.title">一次构建经过哪四步</h2>
+      <p class="sec__note" data-i18n="chain.note">以 OneStar 的命令行构建为例</p>
     </div>
-    <p class="sec__lede">
-      没有 Gradle，四个工具按顺序打完一遍，出 APK。每一步都能单独跑、单独看输出，
-      出错时知道是资源、字节码还是签名的问题。
-    </p>
+    <p class="sec__lede" data-i18n="chain.lede">没有 Gradle，四个工具按顺序打完一遍，出 APK。每一步都能单独跑、单独看输出，出错时知道是资源、字节码还是签名的问题。</p>
 
     <ol class="chain">
       <li class="chain__item">
         <span class="chain__index">01</span>
         <span class="chain__tool">aapt2</span>
-        <p class="chain__what">编译并链接资源，生成带资源表的容器</p>
+        <p class="chain__what" data-i18n="chain.s1">编译并链接资源，生成带资源表的容器</p>
       </li>
       <li class="chain__item">
         <span class="chain__index">02</span>
         <span class="chain__tool">javac</span>
-        <p class="chain__what">编译 Java 源码，产出 class 文件</p>
+        <p class="chain__what" data-i18n="chain.s2">编译 Java 源码，产出 class 文件</p>
       </li>
       <li class="chain__item">
         <span class="chain__index">03</span>
         <span class="chain__tool">d8</span>
-        <p class="chain__what">把 class 转成 dex，打进容器</p>
+        <p class="chain__what" data-i18n="chain.s3">把 class 转成 dex，打进容器</p>
       </li>
       <li class="chain__item">
         <span class="chain__index">04</span>
         <span class="chain__tool">apksigner</span>
-        <p class="chain__what">签名并校验，产出可安装的 APK</p>
+        <p class="chain__what" data-i18n="chain.s4">签名并校验，产出可安装的 APK</p>
       </li>
     </ol>
 
-    <p class="chain__aside">
-      JNI 那一层不在这条链上：它由 <code>zig cc</code> 单独编译成 .so，在 d8 之前放进同一次打包。
-      好处是构建脚本只有百来行，坏处是所有约定都得自己记住——所以构建规范写进了文档，而不是留在脑子里。
-    </p>
+    <p class="chain__aside" data-i18n="chain.aside">JNI 那一层不在这条链上：它由 <code>zig cc</code> 单独编译成 .so，在 d8 之前放进同一次打包。好处是构建脚本只有百来行，坏处是所有约定都得自己记住——所以构建规范写进了文档，而不是留在脑子里。</p>
   </section>
 
   <section class="sec" id="way" aria-labelledby="way-title">
     <div class="sec__head">
-      <h2 class="sec__title" id="way-title">做事方式</h2>
+      <h2 class="sec__title" id="way-title" data-i18n="way.title">做事方式</h2>
     </div>
     <dl class="creed">
       <div class="creed__row">
-        <dt class="creed__term">原生优先</dt>
-        <dd class="creed__desc">界面用 Canvas 逐帧画，不套 WebView，不为了快而牺牲可控。</dd>
+        <dt class="creed__term" data-i18n="way.1t">原生优先</dt>
+        <dd class="creed__desc" data-i18n="way.1d">界面用 Canvas 逐帧画，不套 WebView，不为了快而牺牲可控。</dd>
       </div>
       <div class="creed__row">
-        <dt class="creed__term">依赖克制</dt>
-        <dd class="creed__desc">能自己写的一行，就不引入一个包。构建链的每一环都要说得清做了什么。</dd>
+        <dt class="creed__term" data-i18n="way.2t">依赖克制</dt>
+        <dd class="creed__desc" data-i18n="way.2d">能自己写的一行，就不引入一个包。构建链的每一环都要说得清做了什么。</dd>
       </div>
       <div class="creed__row">
-        <dt class="creed__term">可复现</dt>
-        <dd class="creed__desc">命令行能编译出同一种 APK，构建过程不依赖 IDE 的隐式魔法。</dd>
+        <dt class="creed__term" data-i18n="way.3t">可复现</dt>
+        <dd class="creed__desc" data-i18n="way.3d">命令行能编译出同一种 APK，构建过程不依赖 IDE 的隐式魔法。</dd>
       </div>
       <div class="creed__row">
-        <dt class="creed__term">文档写实</dt>
-        <dd class="creed__desc">README 里同时记限制、踩坑和已知问题，不只写亮点。</dd>
+        <dt class="creed__term" data-i18n="way.4t">文档写实</dt>
+        <dd class="creed__desc" data-i18n="way.4d">README 里同时记限制、踩坑和已知问题，不只写亮点。</dd>
       </div>
     </dl>
   </section>
 
   <section class="sec" id="now" aria-labelledby="now-title">
     <div class="sec__head">
-      <h2 class="sec__title" id="now-title">最近</h2>
+      <h2 class="sec__title" id="now-title" data-i18n="now.title">最近</h2>
     </div>
     <table class="log">
-      <caption class="sr-only">最近的工作记录</caption>
+      <caption class="sr-only" data-i18n="now.caption">最近的工作记录</caption>
       <thead>
-        <tr><th scope="col">方向</th><th scope="col">做了什么</th></tr>
+        <tr>
+          <th scope="col" data-i18n="now.th1">方向</th>
+          <th scope="col" data-i18n="now.th2">做了什么</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
           <td>OneStar 0.12.x</td>
-          <td>targetSdk 升到 37，签名与发布链路加固，16 KB 页对齐复核，大屏方向守卫。</td>
+          <td data-i18n="now.r1">targetSdk 升到 37，签名与发布链路加固，16 KB 页对齐复核，大屏方向守卫。</td>
         </tr>
         <tr>
           <td>moltdisk 0.1.0</td>
-          <td>首个正式版：审计报告、<code>why</code> 子命令与证据链；删除能力在发布前被整段移除。</td>
+          <td data-i18n="now.r2">首个正式版：审计报告、<code>why</code> 子命令与证据链；删除能力在发布前被整段移除。</td>
         </tr>
         <tr>
           <td>Persona Spec v3</td>
-          <td>人格矩阵、禁句表与 lint 闸门成型，接入 CI 做灰阶观测。</td>
+          <td data-i18n="now.r3">人格矩阵、禁句表与 lint 闸门成型，接入 CI 做灰阶观测。</td>
         </tr>
         <tr>
-          <td>工程文档</td>
-          <td>构建规范、发版清单与跨平台开发约定持续补齐。</td>
+          <td data-i18n="now.r4k">工程文档</td>
+          <td data-i18n="now.r4">构建规范、发版清单与跨平台开发约定持续补齐。</td>
         </tr>
       </tbody>
     </table>
@@ -903,46 +1040,44 @@
 
   <section class="sec" id="status" aria-labelledby="status-title">
     <div class="sec__head">
-      <h2 class="sec__title" id="status-title">构建状态</h2>
-      <p class="sec__note">点开可看每次运行的日志</p>
+      <h2 class="sec__title" id="status-title" data-i18n="status.title">构建状态</h2>
+      <p class="sec__note" data-i18n="status.note">点开可看每次运行的日志</p>
     </div>
-    <p class="sec__lede">
-      五条工作流分别盯着四个仓库。仓库页上的徽章走外部图片请求，这里只留链接，页面本身不向外发任何请求。
-    </p>
+    <p class="sec__lede" data-i18n="status.lede">五条工作流分别盯着四个仓库。仓库页上的徽章走外部图片请求，这里只留链接，页面本身不向外发任何请求。</p>
     <table class="status">
-      <caption class="sr-only">各仓库的 CI 工作流与运行记录链接</caption>
+      <caption class="sr-only" data-i18n="status.caption">各仓库的 CI 工作流与运行记录链接</caption>
       <thead>
         <tr>
-          <th scope="col">仓库</th>
-          <th scope="col">工作流</th>
-          <th scope="col">运行记录</th>
+          <th scope="col" data-i18n="status.th1">仓库</th>
+          <th scope="col" data-i18n="status.th2">工作流</th>
+          <th scope="col" data-i18n="status.th3">运行记录</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>onestar</td>
           <td><code>android.yml</code></td>
-          <td><a href="https://github.com/yangyang2857-rgb/onestar/actions/workflows/android.yml">打开</a></td>
+          <td><a href="https://github.com/yangyang2857-rgb/onestar/actions/workflows/android.yml" data-i18n="link.open">打开</a></td>
         </tr>
         <tr>
           <td>onestar</td>
           <td><code>regression.yml</code></td>
-          <td><a href="https://github.com/yangyang2857-rgb/onestar/actions/workflows/regression.yml">打开</a></td>
+          <td><a href="https://github.com/yangyang2857-rgb/onestar/actions/workflows/regression.yml" data-i18n="link.open">打开</a></td>
         </tr>
         <tr>
           <td>appfunction-guard</td>
           <td><code>build.yml</code></td>
-          <td><a href="https://github.com/yangyang2857-rgb/appfunction-guard/actions/workflows/build.yml">打开</a></td>
+          <td><a href="https://github.com/yangyang2857-rgb/appfunction-guard/actions/workflows/build.yml" data-i18n="link.open">打开</a></td>
         </tr>
         <tr>
           <td>moltdisk</td>
           <td><code>ci.yml</code></td>
-          <td><a href="https://github.com/yangyang2857-rgb/moltdisk/actions/workflows/ci.yml">打开</a></td>
+          <td><a href="https://github.com/yangyang2857-rgb/moltdisk/actions/workflows/ci.yml" data-i18n="link.open">打开</a></td>
         </tr>
         <tr>
           <td>marvis-persona-spec</td>
           <td><code>persona-lint.yml</code></td>
-          <td><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec/actions/workflows/persona-lint.yml">打开</a></td>
+          <td><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec/actions/workflows/persona-lint.yml" data-i18n="link.open">打开</a></td>
         </tr>
       </tbody>
     </table>
@@ -950,28 +1085,358 @@
 
   <section class="colophon" id="about" aria-labelledby="about-title">
     <div>
-      <h2 class="colophon__title" id="about-title">关于这一页</h2>
-      <p>一个 HTML 文件，样式内联，没有脚本、没有字体下载、没有统计代码。断网也能完整读完，除了那几个指向 GitHub 的链接。</p>
-      <p>字体用系统的宋体系（宋体、思源宋体、Noto Serif SC 依次兜底），正文行宽约六十三个字符；深底是常态，这个工作室的东西多在夜里写完。</p>
-      <p>四个项目目前在个人账号下维护，等发布与协作链路稳定后再迁入本组织。</p>
+      <h2 class="colophon__title" id="about-title" data-i18n="about.title">关于这一页</h2>
+      <p data-i18n="about.p1">一个 HTML 文件，样式内联，没有字体下载、没有统计代码、没有第三方请求。断网也能完整读完，除了那几个指向 GitHub 的链接。</p>
+      <p data-i18n="about.p2">主题与语言由页面自己处理：颜色走 CSS 变量，两副皮肤；三种语言共用同一份结构。你的选择只写进本机的 <code>localStorage</code>，不会被送到任何地方。</p>
+      <p data-i18n="about.p3">字体用系统的宋体系（宋体、思源宋体、Noto Serif SC 依次兜底），正文行宽约六十三个字符；深底是常态，这个工作室的东西多在夜里写完。</p>
+      <p data-i18n="about.p4">四个项目目前在个人账号下维护，等发布与协作链路稳定后再迁入本组织。</p>
     </div>
     <div>
-      <h2 class="colophon__title">去哪里找</h2>
+      <h2 class="colophon__title" data-i18n="links.title">去哪里找</h2>
       <ul class="links">
-        <li><span>官网</span><a href="https://nightglean.github.io/">nightglean.github.io</a></li>
-        <li><span>组织</span><a href="https://github.com/nightglean">github.com/nightglean</a></li>
-        <li><span>作者</span><a href="https://github.com/yangyang2857-rgb">yangyang2857-rgb</a></li>
-        <li><span>个人站点</span><a href="https://yangyang2857-rgb.github.io">yangyang2857-rgb.github.io</a></li>
-        <li><span>问题与建议</span><a href="https://github.com/nightglean/.github/issues">在 .github 仓库提 Issue</a></li>
+        <li><span data-i18n="links.site">官网</span><a href="https://nightglean.github.io/">nightglean.github.io</a></li>
+        <li><span data-i18n="links.org">组织</span><a href="https://github.com/nightglean">github.com/nightglean</a></li>
+        <li><span data-i18n="links.author">作者</span><a href="https://github.com/yangyang2857-rgb">yangyang2857-rgb</a></li>
+        <li><span data-i18n="links.personal">个人站点</span><a href="https://yangyang2857-rgb.github.io">yangyang2857-rgb.github.io</a></li>
+        <li><span data-i18n="links.issue">问题与建议</span><a href="https://github.com/nightglean/.github/issues" data-i18n="links.issue.link">在 .github 仓库提 Issue</a></li>
       </ul>
     </div>
   </section>
 
   <footer class="foot">
-    <p class="foot__note">四个项目里的许可各按仓库声明：目前明确的是 AppFunction Guard 与 moltdisk 采用 MIT。</p>
-    <p class="foot__sig">长夜拾星 · 二〇二六</p>
+    <p class="foot__note" data-i18n="foot.note">四个项目里的许可各按仓库声明：目前明确的是 AppFunction Guard 与 moltdisk 采用 MIT。</p>
+    <p class="foot__sig" data-i18n="foot.sig">长夜拾星 · 二〇二六</p>
   </footer>
 
 </main>
+
+<script type="application/json" id="ng-i18n">{
+ "tw": {
+  "skip": "跳到正文",
+  "mark": "長夜拾星",
+  "theme.dark": "深色",
+  "nav.work": "專案",
+  "nav.chain": "建構",
+  "nav.way": "做法",
+  "nav.now": "最近",
+  "nav.status": "狀態",
+  "nav.about": "這一頁",
+  "h1": "長夜拾星 Nightglean Studio",
+  "hero.motto": "獨立開發，原生實現，先把「能不能不這樣做」問一遍",
+  "hero.lede": "一個很小的獨立工作室，做 Android 應用與工程實驗。不追框架，不堆依賴，<strong>儘量讓每一條建構鏈路都能被自己讀懂</strong>。這裡放的四個專案，都還在自己手上改。",
+  "hero.cta1": "看四個專案",
+  "hero.cta2": "讀做事方式",
+  "facts.1": "在維護的專案<br/>Android、Rust、規範與文字",
+  "facts.2": "條 CI 工作流<br/>建構、回歸、lint 都在跑",
+  "facts.3": "這一頁的外部請求<br/>字型、腳本、圖片都不外借",
+  "work.title": "專案",
+  "work.note": "四個倉庫，目前都在個人帳號下維護",
+  "work.lede": "四個專案分別對應四種不同的克制：不引建構系統的 Android 應用、補平台缺口的安全庫、只出證據不動手的磁碟工具、能被程式檢查的一份規範。",
+  "p1.name": "拾光 OneStar",
+  "p1.what": "一天記一筆心情，累積成一片手繪星圖。桌面小元件、心情曲線、年度長圖海報，三樣東西都指向同一件事：讓一年的情緒有個能看見的形狀。",
+  "spec.lang": "語言",
+  "p1.lang": "Java，JNI 層用 <code>zig cc</code> 編譯",
+  "spec.build": "建構",
+  "p1.build": "<code>aapt2 + javac + d8 + apksigner</code> 手工串起，沒有 Gradle",
+  "spec.deps": "依賴",
+  "p1.deps": "無 AndroidX，無第三方 SDK，介面全部 Canvas 自繪",
+  "spec.state": "狀態",
+  "p1.state": "0.12.x 迭代中，targetSdk 37",
+  "p2.name": "AppFunction Guard",
+  "p2.what": "Android 16 的 AppFunctions 讓 AI Agent 能直接呼叫 App 內的函式。這個庫補上平台沒給的逐函式授權、限流、引數校驗與審計鏈路。",
+  "p2.lang": "Kotlin 2.2",
+  "spec.how": "接入",
+  "p2.how": "單一攔截點插在平台與業務邏輯之間，業務程式碼改動可收斂到一處",
+  "p2.deps": "<code>minSdk 26</code>，MIT 許可",
+  "p2.state": "alpha，介面仍在調整",
+  "p3.name": "moltdisk 蛻冗",
+  "p3.what": "磁碟健檢工具：找出能由原始碼重建的建構產物，算體積、排序，並給出「憑什麼可刪」的證據。它自己不刪任何東西。",
+  "p3.lang": "Rust 2021，MSRV 1.80",
+  "spec.can": "能做",
+  "p3.can": "審計報告與 <code>why</code> 子命令，逐條說明重建依據",
+  "spec.cant": "不能做",
+  "p3.cant": "沒有刪除程式碼路徑，傳 <code>-y</code> 直接報錯",
+  "p3.state": "v0.1.0，MIT 許可",
+  "p4.name": "Marvis · Persona Spec",
+  "p4.what": "一份能被程式檢查的人格規範：30 格台詞位、20 條禁句、一個能跑的 lint 腳本、10 條基準測試，外加 Fault Bloom 視覺系統。",
+  "spec.parts": "組成",
+  "p4.parts": "Markdown 規範 + Python lint，規範與檢查腳本同一個倉庫",
+  "p4.how": "CI 裡兩段式：先出灰階報告，再上門禁",
+  "p4.state": "v3",
+  "chain.title": "一次建構經過哪四步",
+  "chain.note": "以 OneStar 的命令列建構為例",
+  "chain.lede": "沒有 Gradle，四個工具按順序打完一遍，出 APK。每一步都能單獨跑、單獨看輸出，出錯時知道是資源、位元組碼還是簽名的問題。",
+  "chain.s1": "編譯並連結資源，生成帶資源表的容器",
+  "chain.s2": "編譯 Java 原始碼，產出 class 檔案",
+  "chain.s3": "把 class 轉成 dex，打進容器",
+  "chain.s4": "簽名並校驗，產出可安裝的 APK",
+  "chain.aside": "JNI 那一層不在這條鏈上：它由 <code>zig cc</code> 單獨編譯成 .so，在 d8 之前放進同一次打包。好處是建構腳本只有百來行，壞處是所有約定都得自己記住——所以建構規範寫進了文件，而不是留在腦子裡。",
+  "way.title": "做事方式",
+  "way.1t": "原生優先",
+  "way.1d": "介面用 Canvas 逐幀畫，不套 WebView，不為了快而犧牲可控。",
+  "way.2t": "依賴克制",
+  "way.2d": "能自己寫的一行，就不引入一個包。建構鏈的每一環都要說得清做了什麼。",
+  "way.3t": "可復現",
+  "way.3d": "命令列能編譯出同一種 APK，建構過程不依賴 IDE 的隱式魔法。",
+  "way.4t": "文件寫實",
+  "way.4d": "README 裡同時記限制、踩坑和已知問題，不只寫亮點。",
+  "now.title": "最近",
+  "now.caption": "最近的工作記錄",
+  "now.th1": "方向",
+  "now.th2": "做了什麼",
+  "now.r1": "targetSdk 升到 37，簽名與釋出鏈路加固，16 KB 頁對齊複核，大屏方向守衛。",
+  "now.r2": "首個正式版：審計報告、<code>why</code> 子命令與證據鏈；刪除能力在釋出前被整段移除。",
+  "now.r3": "人格矩陣、禁句表與 lint 閘門成型，接入 CI 做灰階觀測。",
+  "now.r4k": "工程文件",
+  "now.r4": "建構規範、發行清單與跨平台開發約定持續補齊。",
+  "status.title": "建構狀態",
+  "status.note": "點開可看每次執行的日誌",
+  "status.lede": "五條工作流分別盯著四個倉庫。倉庫頁上的徽章走外部圖片請求，這裡只留連結，頁面本身不向外發任何請求。",
+  "status.caption": "各倉庫的 CI 工作流與執行記錄連結",
+  "status.th1": "倉庫",
+  "status.th2": "工作流",
+  "status.th3": "執行記錄",
+  "link.open": "開啟",
+  "about.title": "關於這一頁",
+  "about.p1": "一個 HTML 檔案，樣式內聯，沒有字型下載、沒有統計程式碼、沒有第三方請求。斷網也能完整讀完，除了那幾個指向 GitHub 的連結。",
+  "about.p2": "主題與語言由頁面自己處理：顏色走 CSS 變數，兩副皮膚；三種語言共用同一份結構。你的選擇只寫進本機的 <code>localStorage</code>，不會被送到任何地方。",
+  "about.p3": "字型用系統的宋體系（宋體、思源宋體、Noto Serif SC 依次兜底），正文行寬約六十三個字元；深底是常態，這個工作室的東西多在夜裡寫完。",
+  "about.p4": "四個專案目前在個人帳號下維護，等釋出與協作鏈路穩定後再遷入本組織。",
+  "links.title": "去哪裡找",
+  "links.site": "官網",
+  "links.org": "組織",
+  "links.author": "作者",
+  "links.personal": "個人站點",
+  "links.issue": "問題與建議",
+  "links.issue.link": "在 .github 倉庫提 Issue",
+  "foot.note": "四個專案裡的許可各按倉庫宣告：目前明確的是 AppFunction Guard 與 moltdisk 採用 MIT。",
+  "foot.sig": "長夜拾星 · 二〇二六",
+  "@title": "長夜拾星 · Nightglean Studio",
+  "@desc": "一個很小的獨立工作室，做 Android 應用與工程實驗。原生實現，依賴克制，建構鏈路自己讀得懂。",
+  "tools.lang": "語言",
+  "theme.aria": "切換深淺色",
+  "nav.label": "頁面章節",
+  "theme.light": "淺色",
+  "@tools.lang": "語言",
+  "@theme.aria": "切換深淺色",
+  "@nav.label": "頁面章節"
+ },
+ "en": {
+  "skip": "Skip to content",
+  "theme.dark": "Dark",
+  "theme.light": "Light",
+  "theme.aria": "Switch colour scheme",
+  "tools.lang": "Language",
+  "nav.label": "Page sections",
+  "nav.work": "Work",
+  "nav.chain": "Build",
+  "nav.way": "Method",
+  "nav.now": "Recent",
+  "nav.status": "Status",
+  "nav.about": "This page",
+  "h1": "Nightglean Studio",
+  "mark": "Nightglean",
+  "hero.motto": "Independent work, native implementations — ask “can we not do it this way?” first",
+  "hero.lede": "A very small independent studio building Android apps and engineering experiments. No framework chasing, no dependency piles — <strong>every link in the build chain should be readable by the person who owns it</strong>. All four projects here are still being changed by hand.",
+  "hero.cta1": "See the four projects",
+  "hero.cta2": "How it is made",
+  "facts.1": "Projects in maintenance<br>Android, Rust, a spec and prose",
+  "facts.2": "CI workflows<br>build, regression, lint — all running",
+  "facts.3": "External requests on this page<br>no fonts, scripts or images borrowed",
+  "work.title": "Work",
+  "work.note": "Four repositories, all currently under a personal account",
+  "work.lede": "Each project stands for a different kind of restraint: an Android app with no build system, a security library filling a platform gap, a disk tool that only produces evidence, and a spec a program can check.",
+  "p1.name": "OneStar",
+  "p1.what": "One mood a day, accumulated into a hand-drawn star map. A home screen widget, a mood curve and a year-in-review poster all point at the same thing: giving a year of feelings a shape you can see.",
+  "spec.lang": "Language",
+  "p1.lang": "Java, with the JNI layer compiled by <code>zig cc</code>",
+  "spec.build": "Build",
+  "p1.build": "<code>aapt2 + javac + d8 + apksigner</code> wired by hand — no Gradle",
+  "spec.deps": "Dependencies",
+  "p1.deps": "No AndroidX, no third-party SDK; every screen is drawn with Canvas",
+  "spec.state": "Status",
+  "p1.state": "Iterating on 0.12.x, targetSdk 37",
+  "p2.name": "AppFunction Guard",
+  "p2.what": "AppFunctions in Android 16 let AI agents call straight into an app. This library adds what the platform leaves out: per-function authorisation, rate limits, argument validation and an audit trail.",
+  "p2.lang": "Kotlin 2.2",
+  "spec.how": "Integration",
+  "p2.how": "One interception point between the platform and business logic, so changes stay in a single place",
+  "p2.deps": "<code>minSdk 26</code>, MIT licence",
+  "p2.state": "alpha, interfaces still moving",
+  "p3.name": "moltdisk",
+  "p3.what": "A disk checkup tool: it finds build artefacts that can be rebuilt from source, measures and ranks them, and shows the evidence for why each is safe to drop. It never deletes anything itself.",
+  "p3.lang": "Rust 2021, MSRV 1.80",
+  "spec.can": "It does",
+  "p3.can": "An audit report and a <code>why</code> subcommand that explains the rebuild basis line by line",
+  "spec.cant": "It does not",
+  "p3.cant": "There is no delete code path — passing <code>-y</code> fails outright",
+  "p3.state": "v0.1.0, MIT licence",
+  "p4.name": "Marvis · Persona Spec",
+  "p4.what": "A persona spec a program can check: 30 dialogue slots, 20 banned lines, a lint script that runs, 10 benchmark cases, plus the Fault Bloom visual system.",
+  "spec.parts": "Made of",
+  "p4.parts": "A Markdown spec plus a Python lint; spec and checker in one repository",
+  "p4.how": "Two stages in CI: emit a grey-scale report, then gate on it",
+  "p4.state": "v3",
+  "chain.title": "What one build passes through",
+  "chain.note": "Using OneStar's command-line build as the example",
+  "chain.lede": "No Gradle. Four tools run in order and an APK comes out. Each step can be run and read on its own, so a failure tells you whether it was resources, bytecode or signing.",
+  "chain.s1": "Compile and link resources into a container with a resource table",
+  "chain.s2": "Compile Java sources into class files",
+  "chain.s3": "Convert classes to dex and pack them into the container",
+  "chain.s4": "Sign and verify, producing an installable APK",
+  "chain.aside": "The JNI layer is not on this chain: <code>zig cc</code> builds it into a .so separately, and it joins the same packaging run before d8. The upside is a build script of about a hundred lines; the downside is that every convention has to be remembered — which is why the build rules live in a document instead of in someone's head.",
+  "way.title": "How it is done",
+  "way.1t": "Native first",
+  "way.1d": "Screens are drawn frame by frame with Canvas, never wrapped in a WebView, and control is never traded for speed.",
+  "way.2t": "Restrained dependencies",
+  "way.2d": "If it can be written as one line, it does not become a package. Every link in the build chain has to account for what it does.",
+  "way.3t": "Reproducible",
+  "way.3d": "The command line produces the same APK; the build never leans on implicit IDE magic.",
+  "way.4t": "Honest docs",
+  "way.4d": "READMEs record limits, pitfalls and known issues, not just highlights.",
+  "now.title": "Recent",
+  "now.caption": "Recent work log",
+  "now.th1": "Area",
+  "now.th2": "What happened",
+  "now.r1": "targetSdk raised to 37, signing and release path hardened, 16 KB page alignment re-checked, wide-screen orientation guard added.",
+  "now.r2": "First stable release: audit report, <code>why</code> subcommand and the evidence chain; the delete capability was removed entirely before shipping.",
+  "now.r3": "Persona matrix, banned-line table and lint gate came together, then went into CI for grey-scale observation.",
+  "now.r4k": "Engineering docs",
+  "now.r4": "Build rules, release checklists and cross-platform conventions keep filling in.",
+  "status.title": "Build status",
+  "status.note": "Each link opens the run log",
+  "status.lede": "Five workflows watch four repositories. Badges on the repository pages need external image requests, so only links appear here — the page itself makes no outbound requests.",
+  "status.caption": "CI workflows and run logs per repository",
+  "status.th1": "Repository",
+  "status.th2": "Workflow",
+  "status.th3": "Runs",
+  "link.open": "Open",
+  "about.title": "About this page",
+  "about.p1": "One HTML file with inline styles: no font downloads, no analytics, no third-party requests. It reads fine offline too, apart from the links to GitHub.",
+  "about.p2": "Theme and language are handled by the page itself: colours are CSS variables across two skins, and three languages share one structure. Your choice is written only to this device's <code>localStorage</code> and sent nowhere.",
+  "about.p3": "Type falls back through the system Song faces (Songti, Source Han Serif, Noto Serif SC). Measure is about sixty-three characters. A dark ground is the default — most of this studio's work gets finished at night.",
+  "about.p4": "The four projects currently live under a personal account and will move into this organisation once release and collaboration paths settle.",
+  "links.title": "Where to find it",
+  "links.site": "Site",
+  "links.org": "Organisation",
+  "links.author": "Author",
+  "links.personal": "Personal site",
+  "links.issue": "Issues",
+  "links.issue.link": "Open an issue in .github",
+  "foot.note": "Licences follow each repository's own declaration; so far AppFunction Guard and moltdisk are explicitly MIT.",
+  "foot.sig": "Nightglean Studio · 2026",
+  "@title": "Nightglean Studio — small, native, built at night",
+  "@desc": "Nightglean Studio is a very small independent studio building Android apps and engineering experiments. Native implementations, restrained dependencies, build chains you can read yourself.",
+  "@tools.lang": "Language",
+  "@theme.aria": "Switch colour scheme",
+  "@nav.label": "Page sections"
+ }
+}</script>
+<script>
+(function(){
+  var d=document.documentElement;
+  var KEY_T='ng.theme', KEY_L='ng.lang';
+  var dict={};
+  try{dict=JSON.parse(document.getElementById('ng-i18n').textContent)||{}}catch(e){dict={}}
+
+  var metaColor=document.querySelector('meta[name="theme-color"]');
+  var metaDesc=document.querySelector('meta[name="description"]');
+  var ogTitle=document.querySelector('meta[property="og:title"]');
+  var ogDesc=document.querySelector('meta[property="og:description"]');
+  var ogLocale=document.querySelector('meta[property="og:locale"]');
+  var themeBtn=document.querySelector('[data-theme-toggle]');
+  var themeLabel=themeBtn?themeBtn.querySelector('.tools__label'):null;
+  var langBtns=[].slice.call(document.querySelectorAll('[data-lang-btn]'));
+
+  var base={};          // 简体基线：一次性从 HTML 原文收好，之后任何语言都从这里回退
+  var current='zh';
+
+  [].slice.call(document.querySelectorAll('[data-i18n]')).forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    if(base[k]===undefined) base[k]=el.innerHTML;
+  });
+  [].slice.call(document.querySelectorAll('[data-i18n-aria]')).forEach(function(el){
+    var k='@'+el.getAttribute('data-i18n-aria');
+    if(base[k]===undefined) base[k]=el.getAttribute('aria-label')||'';
+  });
+  base['@title']=document.title;
+  if(metaDesc) base['@desc']=metaDesc.getAttribute('content');
+  if(base['theme.light']===undefined) base['theme.light']='浅色';
+
+  function tr(key){
+    var p=dict[current];
+    return (p&&p[key]!==undefined)?p[key]:base[key];
+  }
+  function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function stored(k){try{return !!localStorage.getItem(k)}catch(e){return false}}
+
+  function renderThemeBtn(){
+    if(!themeBtn||!themeLabel) return;
+    var light=d.getAttribute('data-theme')==='light';
+    var key=light?'theme.light':'theme.dark';
+    themeBtn.setAttribute('aria-pressed',light?'true':'false');
+    themeLabel.setAttribute('data-i18n',key);
+    themeLabel.innerHTML=tr(key);
+    if(metaColor) metaColor.setAttribute('content',light?'#f3ede1':'#0c1210');
+  }
+
+  function applyLang(lang,remember){
+    current=(lang==='tw'||lang==='en')?lang:'zh';
+
+    [].slice.call(document.querySelectorAll('[data-i18n]')).forEach(function(el){
+      var v=tr(el.getAttribute('data-i18n'));
+      if(v!==undefined) el.innerHTML=v;
+    });
+    [].slice.call(document.querySelectorAll('[data-i18n-aria]')).forEach(function(el){
+      var v=tr('@'+el.getAttribute('data-i18n-aria'));
+      if(v) el.setAttribute('aria-label',v);
+    });
+
+    d.setAttribute('lang',current==='en'?'en':(current==='tw'?'zh-Hant':'zh-CN'));
+    d.setAttribute('data-lang',current);
+
+    var t=tr('@title'), desc=tr('@desc');
+    if(t) document.title=t;
+    if(metaDesc&&desc) metaDesc.setAttribute('content',desc);
+    if(ogTitle&&t) ogTitle.setAttribute('content',t);
+    if(ogDesc&&desc) ogDesc.setAttribute('content',desc);
+    if(ogLocale) ogLocale.setAttribute('content',current==='en'?'en_US':(current==='tw'?'zh_TW':'zh_CN'));
+
+    langBtns.forEach(function(b){
+      b.setAttribute('aria-pressed',b.getAttribute('data-lang-btn')===current?'true':'false');
+    });
+
+    renderThemeBtn();
+    if(remember!==false) store(KEY_L,current);
+  }
+
+  function setTheme(t,remember){
+    d.setAttribute('data-theme',t);
+    if(remember!==false) store(KEY_T,t);
+    renderThemeBtn();
+  }
+
+  if(themeBtn) themeBtn.addEventListener('click',function(){
+    setTheme(d.getAttribute('data-theme')==='light'?'dark':'light',true);
+  });
+  langBtns.forEach(function(b){
+    b.addEventListener('click',function(){applyLang(b.getAttribute('data-lang-btn'),true)});
+  });
+
+  // 系统配色变化：用户没手动选过才跟随
+  if(window.matchMedia){
+    var mq=window.matchMedia('(prefers-color-scheme: light)');
+    var onChange=function(e){ if(!stored(KEY_T)) setTheme(e.matches?'light':'dark',false); };
+    if(mq.addEventListener) mq.addEventListener('change',onChange);
+    else if(mq.addListener) mq.addListener(onChange);
+  }
+
+  // 首屏：按推断结果渲染，但不动 localStorage，留给用户主动选择
+  applyLang(d.getAttribute('data-lang'),false);
+  d.classList.remove('i18n-wait');
+  d.classList.add('i18n-ready');
+})();
+</script>
+
 </body>
 </html>
