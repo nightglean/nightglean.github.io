@@ -6,342 +6,850 @@
 <title>长夜拾星 · Nightglean Studio</title>
 <meta name="description" content="长夜拾星是一个很小的独立工作室，做 Android 应用与工程实验。原生实现，依赖克制，构建链路自己读得懂。" />
 <meta name="color-scheme" content="dark" />
-<meta name="theme-color" content="#101614" />
+<meta name="theme-color" content="#0c1210" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="长夜拾星 · Nightglean Studio" />
 <meta property="og:description" content="一个很小的独立工作室，做 Android 应用与工程实验。原生实现，依赖克制，构建链路自己读得懂。" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="twitter:card" content="summary" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101614'/%3E%3Cg fill='%23c2a878'%3E%3Crect x='5' y='6' width='4' height='20'/%3E%3Crect x='11' y='6' width='4' height='20'/%3E%3Crect x='17' y='6' width='4' height='20'/%3E%3Crect x='23' y='6' width='4' height='20'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c1210'/%3E%3Cg fill='%23c2a878'%3E%3Crect x='5' y='6' width='4' height='20'/%3E%3Crect x='11' y='6' width='4' height='20'/%3E%3Crect x='17' y='6' width='4' height='20'/%3E%3Crect x='23' y='6' width='4' height='20'/%3E%3C/g%3E%3C/svg%3E" />
 <style>
   :root{
-    --night:#101614;
-    --night-raise:#16201d;
-    --paper:#e6ded0;
+    --night:#0c1210;
+    --night-raise:#121a17;
+    --night-edge:#1a2420;
+    --paper:#e7dece;
+    --paper-dim:#b3aa9b;
     --bamboo:#c2a878;
-    --cinnabar:#b0462c;
-    --moss:#94a394;
+    --cinnabar:#a8422b;
+    --moss:#8d9d90;
 
     --serif:"Songti SC","Songti TC","Source Han Serif SC","Source Han Serif CN","Noto Serif SC","Noto Serif CJK SC","SimSun","STSong",serif;
     --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif;
 
-    --rule:1px solid rgba(194,168,120,.18);
-    --measure:64ch;
+    --rule:1px solid rgba(194,168,120,.16);
+    --hair:1px solid rgba(231,222,206,.07);
+    --measure:63ch;
+    --gutter:clamp(1.25rem,5vw,3.5rem);
   }
 
   *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
   body{
     margin:0;
     background:var(--night);
     color:var(--paper);
-    font-family:var(--sans);
+    font-family:var(--serif);
     font-size:1rem;
-    line-height:1.78;
-    letter-spacing:.01em;
+    line-height:1.86;
+    letter-spacing:.015em;
     text-rendering:optimizeLegibility;
-    background-image:radial-gradient(120% 70% at 50% -10%, rgba(194,168,120,.07), transparent 60%);
+    background-image:
+      radial-gradient(130% 72% at 50% -14%, rgba(194,168,120,.075), transparent 62%),
+      radial-gradient(90% 50% at 88% 108%, rgba(141,157,144,.05), transparent 70%);
     background-repeat:no-repeat;
   }
+  img{max-width:100%;height:auto}
   a{color:var(--paper);text-decoration:none}
-  a:hover{color:var(--bamboo)}
-  a:focus-visible,button:focus-visible{
+  a:hover{color:#fff}
+
+  :focus-visible{
     outline:2px solid var(--bamboo);
-    outline-offset:4px;
-    border-radius:1px;
+    outline-offset:3px;
   }
 
-  .skip{
-    position:absolute;left:-9999px;top:0;background:var(--bamboo);color:var(--night);
-    padding:.6rem 1rem;z-index:10;
+  .sr-only{
+    position:absolute;width:1px;height:1px;
+    padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;border:0;
   }
-  .skip:focus{left:1rem;top:1rem}
+  .skip{
+    position:absolute;left:-999px;top:0;z-index:60;
+    background:var(--bamboo);color:#12100c;
+    padding:.6rem 1rem;font-family:var(--sans);font-size:.9rem;
+  }
+  .skip:focus{left:.75rem;top:.75rem}
 
   .wrap{
-    max-width:46rem;
-    margin-inline:auto;
-    padding:0 clamp(1.15rem,5vw,2.25rem);
-  }
-  .sr-only{
-    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-    overflow:hidden;clip-path:inset(50%);white-space:nowrap;
+    width:100%;
+    max-width:71rem;
+    margin:0 auto;
+    padding:0 var(--gutter);
   }
 
-  /* ---------- hero ---------- */
+  /* ---------- 抬头：贴在顶部的一条简 ---------- */
+  .masthead{
+    position:sticky;top:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:1rem;
+    padding:.7rem var(--gutter);
+    background:rgba(12,18,16,.88);
+    backdrop-filter:blur(9px);
+    -webkit-backdrop-filter:blur(9px);
+    border-bottom:1px solid rgba(194,168,120,.13);
+  }
+  .masthead__mark{
+    margin:0;
+    font-family:var(--serif);
+    font-size:.95rem;
+    letter-spacing:.18em;
+    color:var(--paper);
+    white-space:nowrap;
+  }
+  .masthead__mark span{
+    display:none;
+    font-family:var(--sans);
+    font-size:.7rem;
+    letter-spacing:.14em;
+    color:var(--moss);
+  }
+  .masthead__nav{
+    display:flex;gap:.2rem;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .masthead__nav::-webkit-scrollbar{display:none}
+  .masthead__nav a{
+    padding:.35rem .55rem;
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--paper-dim);
+    white-space:nowrap;
+    border-bottom:1px solid transparent;
+    transition:color .2s ease,border-color .2s ease;
+  }
+  .masthead__nav a:hover,.masthead__nav a:focus-visible{
+    color:var(--paper);
+    border-bottom-color:var(--bamboo);
+  }
+
+  /* ---------- 竹简 ---------- */
   .hero{
-    padding-top:clamp(3.5rem,11vh,6.5rem);
+    padding:clamp(2.6rem,7vh,4.6rem) 0 0;
+    text-align:center;
   }
-  .hero__name{margin:0;font-weight:400}
-
   .slips{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    border-top:var(--rule);
-    border-bottom:var(--rule);
+    list-style:none;
+    display:flex;
+    justify-content:center;
+    align-items:stretch;
+    gap:clamp(.35rem,1.1vw,.62rem);
+    margin:0;
+    padding:0;
+    position:relative;
   }
+  /* 编绳：两道，穿过四片 */
+  .slips::before,
+  .slips::after{
+    content:"";
+    position:absolute;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(194,168,120,.5) 12%,rgba(194,168,120,.5) 88%,transparent);
+    z-index:2;
+    pointer-events:none;
+  }
+  .slips::before{top:22%}
+  .slips::after{top:74%}
+
   .slip{
     position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:clamp(1.6rem,5vw,2.6rem) 0;
-    font-family:var(--serif);
-    font-size:clamp(2.6rem,11vw,4.4rem);
-    line-height:1;
-    color:var(--paper);
-    text-shadow:0 1px 0 rgba(0,0,0,.65), 0 -1px 0 rgba(194,168,120,.14);
+    width:clamp(3.1rem,10.5vw,5.1rem);
+    height:clamp(9.4rem,30vw,14.5rem);
+    display:grid;
+    place-items:center;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.42), rgba(255,255,255,.035) 26%, rgba(255,255,255,.02) 62%, rgba(0,0,0,.46)),
+      linear-gradient(180deg, #1d2622, #141c19 46%, #101715);
+    border:1px solid rgba(194,168,120,.2);
+    border-radius:2px;
+    box-shadow:inset 0 0 0 1px rgba(231,222,206,.025);
   }
-  .slip + .slip{border-left:var(--rule)}
+  /* 竹节：两道横向刻痕 */
+  .slip::before{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      linear-gradient(180deg,transparent 0 27%,rgba(12,18,16,.55) 27.4%,transparent 28.2%),
+      linear-gradient(180deg,transparent 0 79%,rgba(12,18,16,.5) 79.4%,transparent 80.2%);
+    pointer-events:none;
+  }
+  /* 穿孔：编绳处的两个小孔 */
   .slip::after{
     content:"";
-    position:absolute;
-    left:50%;bottom:calc(clamp(1.6rem,5vw,2.6rem) / 2 - .34rem);
-    width:.34rem;height:.34rem;
-    transform:translateX(-50%) rotate(45deg);
-    background:var(--cinnabar);
-    opacity:.85;
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 50% 22%, rgba(6,10,8,.95) 0 3.2px, transparent 3.4px),
+      radial-gradient(circle at 50% 74%, rgba(6,10,8,.95) 0 3.2px, transparent 3.4px);
+    pointer-events:none;
+  }
+  .slip__glyph{
+    position:relative;
+    z-index:3;
+    font-family:var(--serif);
+    font-size:clamp(1.85rem,6.2vw,3rem);
+    line-height:1;
+    color:#d6c9a9;
+    text-shadow:
+      0 1px 0 rgba(0,0,0,.85),
+      0 -1px 0 rgba(231,222,206,.10),
+      0 0 18px rgba(194,168,120,.12);
+    opacity:.94;
+    transform:translateY(1px);
   }
 
   .hero__studio{
-    margin:1.35rem 0 0;
-    font-family:var(--serif);
-    font-size:clamp(1rem,2.6vw,1.15rem);
-    letter-spacing:.34em;
-    text-transform:none;
+    margin:2.15rem 0 0;
+    font-family:var(--sans);
+    font-size:clamp(.7rem,2.2vw,.78rem);
+    letter-spacing:.42em;
+    text-indent:.42em;
     color:var(--bamboo);
   }
   .hero__motto{
-    margin:.35rem 0 0;
+    margin:.7rem 0 0;
     font-family:var(--serif);
-    font-size:clamp(1.05rem,2.8vw,1.2rem);
+    font-size:clamp(1.05rem,2.9vw,1.28rem);
+    letter-spacing:.04em;
     color:var(--paper);
   }
   .hero__lede{
-    margin:2.4rem 0 0;
-    max-width:34rem;
+    margin:1.5rem auto 0;
+    max-width:35rem;
     color:var(--moss);
+    font-size:clamp(.95rem,2.6vw,1rem);
+    text-align:left;
+    text-align:center;
   }
   .hero__lede strong{color:var(--paper);font-weight:500}
-
-  /* 入场：一次编排好的序列 */
-  .slip,.hero__studio,.hero__motto,.hero__lede{
-    animation:carve .95s cubic-bezier(.2,.72,.18,1) both;
+  .hero__acts{
+    margin:2rem 0 0;
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:.7rem;
   }
-  .slip:nth-child(1){animation-delay:.05s}
-  .slip:nth-child(2){animation-delay:.16s}
-  .slip:nth-child(3){animation-delay:.27s}
-  .slip:nth-child(4){animation-delay:.38s}
-  .slip::after{animation:fadeIn .6s ease-out both;animation-delay:1.05s}
-  .hero__studio{animation-delay:.52s}
-  .hero__motto{animation-delay:.62s}
-  .hero__lede{animation-delay:.74s}
-
-  @keyframes carve{
-    from{opacity:0;transform:translateY(10px)}
-    to{opacity:1;transform:none}
+  .btn{
+    display:inline-block;
+    padding:.62rem 1.2rem;
+    font-family:var(--sans);
+    font-size:.86rem;
+    letter-spacing:.05em;
+    color:#12100c;
+    background:var(--bamboo);
+    border:1px solid var(--bamboo);
+    border-radius:1px;
+    transition:background .22s ease,color .22s ease;
   }
-  @keyframes fadeIn{from{opacity:0}to{opacity:.85}}
+  .btn:hover,.btn:focus-visible{background:#d3ba8c;color:#0c1210}
+  .btn--quiet{
+    color:var(--paper-dim);
+    background:transparent;
+    border-color:rgba(194,168,120,.35);
+  }
+  .btn--quiet:hover,.btn--quiet:focus-visible{
+    color:var(--paper);
+    background:rgba(194,168,120,.09);
+  }
 
-  /* ---------- sections ---------- */
-  .section{padding-top:clamp(4rem,9vh,6rem)}
-  .section__title{
-    margin:0 0 1.6rem;
+  /* 案上三笔账：可核对的数字 */
+  .facts{
+    margin:clamp(2.6rem,6vh,3.6rem) 0 0;
+    padding:1.15rem 0;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    border-top:var(--rule);
+    border-bottom:var(--rule);
+    text-align:left;
+  }
+  .facts__item{
+    padding:.15rem 1.1rem;
+    border-left:1px solid rgba(194,168,120,.13);
+  }
+  .facts__item:first-child{padding-left:0;border-left:0}
+  .facts__num{
+    display:block;
     font-family:var(--serif);
-    font-size:1.05rem;
-    font-weight:400;
-    letter-spacing:.16em;
-    color:var(--bamboo);
-    padding-bottom:.7rem;
+    font-size:clamp(1.5rem,5vw,1.9rem);
+    line-height:1.2;
+    color:var(--paper);
+    font-variant-numeric:tabular-nums;
+  }
+  .facts__label{
+    display:block;
+    margin-top:.3rem;
+    font-family:var(--sans);
+    font-size:.78rem;
+    line-height:1.6;
+    color:var(--moss);
+  }
+
+  /* ---------- 章节骨架 ---------- */
+  .sec{padding-top:clamp(3.6rem,8vh,5.4rem)}
+  .sec__head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:1rem 1.5rem;
+    flex-wrap:wrap;
+    padding-bottom:.8rem;
     border-bottom:var(--rule);
   }
-
-  /* ---------- projects (账册式列表) ---------- */
-  .projects{list-style:none;margin:0;padding:0}
-  .project{
-    position:relative;
-    padding:1.5rem 0 1.6rem;
-    border-bottom:1px solid rgba(230,222,208,.07);
-  }
-  .project:last-child{border-bottom:0}
-  .project::before{
-    content:"";
-    position:absolute;
-    left:-.9rem;top:1.55rem;
-    width:2px;height:0;
-    background:var(--cinnabar);
-    transition:height .35s ease;
-  }
-  .project:hover::before,.project:focus-within::before{height:1.6rem}
-
-  .project__head{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:baseline;
-    gap:.4rem .9rem;
-  }
-  .project__name{
+  .sec__title{
     margin:0;
     font-family:var(--serif);
-    font-size:clamp(1.25rem,3.4vw,1.5rem);
+    font-size:clamp(1.12rem,3vw,1.28rem);
     font-weight:400;
-    line-height:1.35;
+    letter-spacing:.14em;
+    color:var(--bamboo);
   }
-  .project__name a{background-image:linear-gradient(var(--bamboo),var(--bamboo));background-size:0 1px;background-position:0 100%;background-repeat:no-repeat;transition:background-size .3s ease}
-  .project__name a:hover,.project__name a:focus-visible{background-size:100% 1px;color:var(--paper)}
-  .project__state{
-    font-size:.82rem;
-    color:var(--moss);
-    font-variant-numeric:tabular-nums;
-    letter-spacing:.04em;
+  .sec__note{
+    margin:0;
+    font-family:var(--sans);
+    font-size:.8rem;
+    color:var(--paper-dim);
+    letter-spacing:.02em;
   }
-  .project__what{
-    margin:.55rem 0 0;
+  .sec__lede{
+    margin:1.3rem 0 0;
     max-width:var(--measure);
-  }
-  .project__how{
-    margin:.45rem 0 0;
-    max-width:var(--measure);
-    font-size:.92rem;
     color:var(--moss);
   }
 
-  /* ---------- how we work ---------- */
-  .creed{margin:0}
-  .creed__row{
+  /* ---------- 项目卷宗 ---------- */
+  .dossiers{margin:0;padding:0;list-style:none}
+  .dossier{
     display:grid;
-    gap:.15rem;
-    padding:1rem 0;
-    border-bottom:1px solid rgba(230,222,208,.07);
+    grid-template-columns:auto 1fr;
+    gap:1.15rem;
+    padding:1.9rem 0 2rem;
+    border-bottom:var(--hair);
   }
-  .creed__row:last-child{border-bottom:0}
+  .dossier:last-child{border-bottom:0}
+  .seal{
+    width:2.5rem;
+    height:2.5rem;
+    display:grid;
+    place-items:center;
+    font-family:var(--serif);
+    font-size:1.12rem;
+    line-height:1;
+    color:#e8c9b8;
+    background:rgba(168,66,43,.14);
+    border:1px solid rgba(168,66,43,.62);
+    border-radius:1px;
+    transform:translateY(.2rem);
+    user-select:none;
+  }
+  .dossier__name{
+    margin:0;
+    font-family:var(--serif);
+    font-size:clamp(1.2rem,3.4vw,1.44rem);
+    font-weight:400;
+    line-height:1.4;
+  }
+  .dossier__name a{
+    background-image:linear-gradient(var(--bamboo),var(--bamboo));
+    background-size:0 1px;
+    background-position:0 100%;
+    background-repeat:no-repeat;
+    transition:background-size .3s ease;
+  }
+  .dossier__name a:hover,.dossier__name a:focus-visible{background-size:100% 1px}
+  .dossier__repo{
+    margin:.15rem 0 0;
+    font-family:var(--sans);
+    font-size:.76rem;
+    color:var(--paper-dim);
+    letter-spacing:.02em;
+  }
+  .dossier__what{
+    margin:.7rem 0 0;
+    max-width:var(--measure);
+  }
+  .dossier__spec{
+    margin:1rem 0 0;
+    display:grid;
+    grid-template-columns:6.6rem 1fr;
+    gap:.35rem 1rem;
+    font-size:.88rem;
+    max-width:40rem;
+  }
+  .dossier__spec dt{
+    font-family:var(--sans);
+    font-size:.76rem;
+    color:var(--paper-dim);
+    letter-spacing:.06em;
+    padding-top:.16rem;
+  }
+  .dossier__spec dd{margin:0;color:var(--moss)}
+  .dossier__spec code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:.86em;
+    color:#cdbf9e;
+  }
+
+  /* ---------- 构建链路：真序列 ---------- */
+  .chain{
+    list-style:none;
+    margin:1.8rem 0 0;
+    padding:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:0;
+    border-top:var(--hair);
+  }
+  .chain__item{
+    position:relative;
+    padding:1.15rem 1rem 1.2rem 0;
+    border-bottom:var(--hair);
+  }
+  .chain__item:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    right:.55rem;top:1.7rem;
+    width:.5rem;height:.5rem;
+    border-top:1px solid rgba(194,168,120,.55);
+    border-right:1px solid rgba(194,168,120,.55);
+    transform:rotate(45deg);
+  }
+  .chain__index{
+    display:block;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:.72rem;
+    color:var(--cinnabar);
+    letter-spacing:.1em;
+  }
+  .chain__tool{
+    display:block;
+    margin:.3rem 0 0;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:1rem;
+    color:#d8cbaa;
+  }
+  .chain__what{
+    margin:.4rem 0 0;
+    font-size:.86rem;
+    line-height:1.7;
+    color:var(--moss);
+    max-width:19ch;
+  }
+  .chain__aside{
+    margin:1.1rem 0 0;
+    padding-left:.9rem;
+    border-left:2px solid rgba(194,168,120,.35);
+    font-size:.9rem;
+    color:var(--paper-dim);
+    max-width:var(--measure);
+  }
+
+  /* ---------- 做事方式 ---------- */
+  .creed{
+    margin:0;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:0;
+    border-top:var(--hair);
+  }
+  .creed__row{
+    padding:1.5rem 2rem 1.6rem 0;
+    border-bottom:var(--hair);
+  }
+  .creed__row:nth-child(even){
+    padding-left:2rem;
+    border-left:1px solid rgba(231,222,206,.05);
+  }
   .creed__term{
     margin:0;
     font-family:var(--serif);
-    font-size:1.02rem;
+    font-size:1.06rem;
     color:var(--paper);
+    letter-spacing:.06em;
   }
-  .creed__desc{margin:0;color:var(--moss);max-width:var(--measure)}
-
-  /* ---------- recent log ---------- */
-  .log{margin:0}
-  .log__row{
-    display:grid;
-    grid-template-columns:minmax(7.5rem,11rem) 1fr;
-    gap:.2rem 1.4rem;
-    padding:.85rem 0;
-    border-bottom:1px solid rgba(230,222,208,.07);
-  }
-  .log__row:last-child{border-bottom:0}
-  .log__when{
-    margin:0;
-    font-size:.88rem;
-    color:var(--bamboo);
-    font-variant-numeric:tabular-nums;
-  }
-  .log__what{margin:0;color:var(--moss)}
-
-  /* ---------- footer ---------- */
-  .foot{
-    margin-top:clamp(4rem,10vh,6.5rem);
-    padding:2rem 0 3.5rem;
-    border-top:var(--rule);
-  }
-  .foot__links{
-    display:flex;
-    flex-wrap:wrap;
-    gap:.4rem 1.6rem;
-    margin:0 0 1.6rem;
-    padding:0;
-    list-style:none;
-  }
-  .foot__links a{
-    display:inline-block;
-    padding:.15rem 0;
-    border-bottom:1px solid rgba(194,168,120,.32);
-  }
-  .foot__note{margin:0;font-size:.86rem;color:var(--moss)}
-  .foot__sig{
-    margin:1.6rem 0 0;
-    font-family:var(--serif);
+  .creed__desc{
+    margin:.5rem 0 0;
     font-size:.92rem;
-    letter-spacing:.22em;
-    color:rgba(194,168,120,.7);
+    color:var(--moss);
+    max-width:34ch;
   }
 
-  @media (max-width:560px){
-    .log__row{grid-template-columns:1fr;gap:.1rem}
-    .hero__studio{letter-spacing:.24em}
-    .slip{padding:1.3rem 0;font-size:clamp(2.3rem,13vw,3rem)}
-    .slip::after{bottom:.42rem;width:.28rem;height:.28rem}
-    .project::before{left:-.6rem}
-    .project__head{flex-direction:column;gap:.15rem}
+  /* ---------- 最近 ---------- */
+  .log{
+    margin:1.4rem 0 0;
+    width:100%;
+    border-collapse:collapse;
+    font-size:.94rem;
+  }
+  .log th,.log td{
+    text-align:left;
+    vertical-align:top;
+    padding:.95rem .9rem .95rem 0;
+    border-bottom:var(--hair);
+  }
+  .log th{
+    font-family:var(--sans);
+    font-size:.76rem;
+    font-weight:400;
+    letter-spacing:.08em;
+    color:var(--paper-dim);
+    white-space:nowrap;
+    padding-top:1.15rem;
+    border-bottom:1px solid rgba(194,168,120,.16);
+  }
+  .log td:first-child{
+    width:11rem;
+    color:var(--paper);
+    white-space:nowrap;
+  }
+  .log td{color:var(--moss)}
+
+  /* ---------- 构建状态 ---------- */
+  .status{
+    margin:1.4rem 0 0;
+    width:100%;
+    border-collapse:collapse;
+    font-size:.92rem;
+  }
+  .status th,.status td{
+    text-align:left;
+    padding:.8rem .9rem .8rem 0;
+    border-bottom:var(--hair);
+  }
+  .status th{
+    font-family:var(--sans);
+    font-size:.76rem;
+    font-weight:400;
+    letter-spacing:.08em;
+    color:var(--paper-dim);
+    border-bottom:1px solid rgba(194,168,120,.16);
+  }
+  .status td{color:var(--moss)}
+  .status code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:.86em;
+    color:#cdbf9e;
+  }
+  .status a{color:var(--paper-dim);border-bottom:1px solid rgba(194,168,120,.3)}
+  .status a:hover{color:var(--paper);border-bottom-color:var(--bamboo)}
+
+  /* ---------- 关于这一页 ---------- */
+  .colophon{
+    margin-top:clamp(3.6rem,8vh,5.4rem);
+    padding:2.4rem 0 0;
+    border-top:var(--rule);
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:clamp(1.6rem,4vw,3.6rem);
+  }
+  .colophon__title{
+    margin:0 0 .9rem;
+    font-family:var(--serif);
+    font-size:1.02rem;
+    font-weight:400;
+    letter-spacing:.12em;
+    color:var(--bamboo);
+  }
+  .colophon p{margin:.7rem 0 0;font-size:.92rem;color:var(--moss);max-width:36ch}
+  .links{list-style:none;margin:0;padding:0}
+  .links li{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:1rem;
+    padding:.7rem 0;
+    border-bottom:var(--hair);
+  }
+  .links li span{font-family:var(--sans);font-size:.78rem;color:var(--paper-dim)}
+  .links li a{font-size:.94rem;border-bottom:1px solid transparent}
+  .links li a:hover{border-bottom-color:var(--bamboo)}
+
+  .foot{
+    margin-top:clamp(2.4rem,6vh,3.4rem);
+    padding:1.6rem 0 3rem;
+    border-top:var(--hair);
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:1rem;
+    flex-wrap:wrap;
+    font-family:var(--sans);
+    font-size:.78rem;
+    color:var(--paper-dim);
+  }
+  .foot__sig{margin:0;font-family:var(--serif);letter-spacing:.2em;color:var(--bamboo)}
+  .foot__note{margin:0;max-width:44ch;line-height:1.7}
+
+  /* ---------- 入场：一次编排 ---------- */
+  .slip{animation:lay .9s cubic-bezier(.2,.72,.18,1) both}
+  .slip:nth-child(1){animation-delay:.04s}
+  .slip:nth-child(2){animation-delay:.14s}
+  .slip:nth-child(3){animation-delay:.24s}
+  .slip:nth-child(4){animation-delay:.34s}
+  .hero__studio,.hero__motto,.hero__lede,.hero__acts{
+    animation:rise .8s cubic-bezier(.2,.72,.18,1) both;
+  }
+  .hero__studio{animation-delay:.5s}
+  .hero__motto{animation-delay:.58s}
+  .hero__lede{animation-delay:.68s}
+  .hero__acts{animation-delay:.78s}
+  .facts{animation:rise .8s cubic-bezier(.2,.72,.18,1) both;animation-delay:.9s}
+
+  @keyframes lay{
+    from{opacity:0;transform:translateY(-14px) scaleY(.94);transform-origin:50% 0}
+    to{opacity:1;transform:none}
+  }
+  @keyframes rise{
+    from{opacity:0;transform:translateY(9px)}
+    to{opacity:1;transform:none}
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (min-width:40rem){
+    .masthead__mark span{display:inline;margin-left:.7rem}
+  }
+
+  @media (max-width:56rem){
+    .chain{grid-template-columns:repeat(2,1fr)}
+    .chain__item:nth-child(2)::after{display:none}
+    .colophon{grid-template-columns:1fr}
+    .creed__row{padding-right:1.2rem}
+    .creed__row:nth-child(even){padding-left:1.2rem}
+  }
+
+  @media (max-width:40rem){
+    body{line-height:1.8}
+    .hero{padding-top:2.1rem}
+    .masthead{padding:.55rem var(--gutter)}
+    .masthead__nav a{font-size:.8rem;padding:.3rem .45rem}
+    .facts{grid-template-columns:1fr;padding:.4rem 0}
+    .facts__item{
+      display:flex;
+      align-items:baseline;
+      gap:.8rem;
+      padding:.7rem 0;
+      border-left:0;
+      border-top:1px solid rgba(231,222,206,.06);
+    }
+    .facts__item:first-child{border-top:0}
+    .facts__num{font-size:1.35rem}
+    .facts__label{font-size:.8rem}
+    .dossier{grid-template-columns:1fr;gap:.7rem;padding:1.6rem 0 1.8rem}
+    .seal{width:2.1rem;height:2.1rem;font-size:.98rem}
+    .dossier__spec{grid-template-columns:1fr;gap:.15rem}
+    .dossier__spec dt{padding-top:.55rem}
+    .chain{grid-template-columns:1fr}
+    .chain__item{padding-right:0}
+    .chain__item:not(:last-child)::after{
+      right:auto;left:0;top:auto;bottom:-.3rem;
+      transform:rotate(135deg);
+    }
+    .chain__what{max-width:32ch}
+    .creed{grid-template-columns:1fr}
+    .creed__row{padding:1.25rem 0}
+    .creed__row:nth-child(even){padding-left:0;border-left:0}
+    .log td:first-child{width:auto;white-space:normal}
+    .log th:nth-child(2),.log td:nth-child(2){padding-right:0}
+    .status th:nth-child(3),.status td:nth-child(3){text-align:right;padding-right:0}
+    .foot{font-size:.74rem}
   }
 
   @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation:none !important;transition:none !important}
+    html{scroll-behavior:auto}
+    *,*::before,*::after{
+      animation-duration:.001ms !important;
+      animation-delay:0ms !important;
+      transition-duration:.001ms !important;
+    }
   }
 </style>
 </head>
 <body>
 <a class="skip" href="#main">跳到正文</a>
 
+<header class="masthead">
+  <p class="masthead__mark">长夜拾星<span>NIGHTGLEAN STUDIO</span></p>
+  <nav class="masthead__nav" aria-label="页面章节">
+    <a href="#work">项目</a>
+    <a href="#chain">构建</a>
+    <a href="#way">做法</a>
+    <a href="#now">最近</a>
+    <a href="#status">状态</a>
+    <a href="#about">这一页</a>
+  </nav>
+</header>
+
 <main id="main" class="wrap">
 
-  <header class="hero">
-    <h1 class="hero__name">
-      <span class="sr-only">长夜拾星 Nightglean Studio</span>
-      <span class="slips" aria-hidden="true">
-        <span class="slip">长</span>
-        <span class="slip">夜</span>
-        <span class="slip">拾</span>
-        <span class="slip">星</span>
-      </span>
-    </h1>
-    <p class="hero__studio">NIGHTGLEAN STUDIO</p>
-    <p class="hero__motto">独立开发 · 原生实现 · 先把「能不能不这样做」问一遍</p>
-    <p class="hero__lede">一个很小的独立工作室，做 Android 应用与工程实验。不追框架，不堆依赖，<strong>尽量让每一条构建链路都能被自己读懂</strong>。</p>
-  </header>
+  <section class="hero" aria-labelledby="site-title">
+    <h1 id="site-title" class="sr-only">长夜拾星 Nightglean Studio</h1>
 
-  <section class="section" id="work" aria-labelledby="work-title">
-    <h2 class="section__title" id="work-title">项目</h2>
-    <ul class="projects">
-      <li class="project">
-        <div class="project__head">
-          <h3 class="project__name"><a href="https://github.com/yangyang2857-rgb/onestar">拾光 OneStar</a></h3>
-          <span class="project__state">0.12.x · targetSdk 37</span>
-        </div>
-        <p class="project__what">一天记一笔心情，累积成一片手绘星图。桌面小组件、心情曲线、年度长图海报。</p>
-        <p class="project__how">纯 Java 加 Canvas 自绘，无 Gradle、无 AndroidX、无第三方 SDK；aapt2 + javac + d8 + apksigner 手工串起构建，JNI 层用 zig cc 编译。</p>
+    <ul class="slips" aria-hidden="true">
+      <li class="slip"><span class="slip__glyph">长</span></li>
+      <li class="slip"><span class="slip__glyph">夜</span></li>
+      <li class="slip"><span class="slip__glyph">拾</span></li>
+      <li class="slip"><span class="slip__glyph">星</span></li>
+    </ul>
+
+    <p class="hero__studio">NIGHTGLEAN STUDIO</p>
+    <p class="hero__motto">独立开发，原生实现，先把「能不能不这样做」问一遍</p>
+    <p class="hero__lede">
+      一个很小的独立工作室，做 Android 应用与工程实验。不追框架，不堆依赖，
+      <strong>尽量让每一条构建链路都能被自己读懂</strong>。这里放的四个项目，都还在自己手上改。
+    </p>
+
+    <div class="hero__acts">
+      <a class="btn" href="#work">看四个项目</a>
+      <a class="btn btn--quiet" href="#way">读做事方式</a>
+    </div>
+
+    <dl class="facts">
+      <div class="facts__item">
+        <span class="facts__num">4</span>
+        <span class="facts__label">在维护的项目<br>Android、Rust、规范与文本</span>
+      </div>
+      <div class="facts__item">
+        <span class="facts__num">5</span>
+        <span class="facts__label">条 CI 工作流<br>构建、回归、lint 都在跑</span>
+      </div>
+      <div class="facts__item">
+        <span class="facts__num">0</span>
+        <span class="facts__label">这一页的构建步骤<br>一个 HTML 文件，直接托管</span>
+      </div>
+    </dl>
+  </section>
+
+  <section class="sec" id="work" aria-labelledby="work-title">
+    <div class="sec__head">
+      <h2 class="sec__title" id="work-title">项目</h2>
+      <p class="sec__note">四个仓库，目前都在个人账号下维护</p>
+    </div>
+    <p class="sec__lede">
+      四个项目分别对应四种不同的克制：不引构建系统的 Android 应用、补平台缺口的安全库、
+      只出证据不动手的磁盘工具、能被程序检查的一份规范。
+    </p>
+
+    <ul class="dossiers">
+      <li>
+        <article class="dossier">
+          <span class="seal" aria-hidden="true">拾</span>
+          <div>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/onestar">拾光 OneStar</a></h3>
+            <p class="dossier__repo">yangyang2857-rgb/onestar</p>
+            <p class="dossier__what">
+              一天记一笔心情，累积成一片手绘星图。桌面小组件、心情曲线、年度长图海报，
+              三样东西都指向同一件事：让一年的情绪有个能看见的形状。
+            </p>
+            <dl class="dossier__spec">
+              <dt>语言</dt><dd>Java，JNI 层用 <code>zig cc</code> 编译</dd>
+              <dt>构建</dt><dd><code>aapt2 + javac + d8 + apksigner</code> 手工串起，没有 Gradle</dd>
+              <dt>依赖</dt><dd>无 AndroidX，无第三方 SDK，界面全部 Canvas 自绘</dd>
+              <dt>状态</dt><dd>0.12.x 迭代中，targetSdk 37</dd>
+            </dl>
+          </div>
+        </article>
       </li>
-      <li class="project">
-        <div class="project__head">
-          <h3 class="project__name"><a href="https://github.com/yangyang2857-rgb/appfunction-guard">AppFunction Guard</a></h3>
-          <span class="project__state">alpha · Kotlin</span>
-        </div>
-        <p class="project__what">Android 16 的 AppFunctions 让 AI Agent 能直接调用 App 内的函数，这个库补上平台没给的逐函数授权、限流、参数校验与审计链路。</p>
-        <p class="project__how">单一拦截点插在平台与业务逻辑之间，minSdk 26，MIT。</p>
+      <li>
+        <article class="dossier">
+          <span class="seal" aria-hidden="true">护</span>
+          <div>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/appfunction-guard">AppFunction Guard</a></h3>
+            <p class="dossier__repo">yangyang2857-rgb/appfunction-guard</p>
+            <p class="dossier__what">
+              Android 16 的 AppFunctions 让 AI Agent 能直接调用 App 内的函数。
+              这个库补上平台没给的逐函数授权、限流、参数校验与审计链路。
+            </p>
+            <dl class="dossier__spec">
+              <dt>语言</dt><dd>Kotlin 2.2</dd>
+              <dt>接入</dt><dd>单一拦截点插在平台与业务逻辑之间，业务代码改动可收敛到一处</dd>
+              <dt>依赖</dt><dd><code>minSdk 26</code>，MIT 许可</dd>
+              <dt>状态</dt><dd>alpha，接口仍在调整</dd>
+            </dl>
+          </div>
+        </article>
       </li>
-      <li class="project">
-        <div class="project__head">
-          <h3 class="project__name"><a href="https://github.com/yangyang2857-rgb/moltdisk">moltdisk 蜕冗</a></h3>
-          <span class="project__state">v0.1.0 · Rust</span>
-        </div>
-        <p class="project__what">磁盘体检工具：找出能由源码重建的构建产物，算体积、排序，并给出「凭什么可删」的证据。它自己不删任何东西。</p>
-        <p class="project__how">Rust 2021，MSRV 1.80；没有删除代码路径，传 <code>-y</code> 直接报错。</p>
+      <li>
+        <article class="dossier">
+          <span class="seal" aria-hidden="true">蜕</span>
+          <div>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/moltdisk">moltdisk 蜕冗</a></h3>
+            <p class="dossier__repo">yangyang2857-rgb/moltdisk</p>
+            <p class="dossier__what">
+              磁盘体检工具：找出能由源码重建的构建产物，算体积、排序，
+              并给出「凭什么可删」的证据。它自己不删任何东西。
+            </p>
+            <dl class="dossier__spec">
+              <dt>语言</dt><dd>Rust 2021，MSRV 1.80</dd>
+              <dt>能做</dt><dd>审计报告与 <code>why</code> 子命令，逐条说明重建依据</dd>
+              <dt>不能做</dt><dd>没有删除代码路径，传 <code>-y</code> 直接报错</dd>
+              <dt>状态</dt><dd>v0.1.0，MIT 许可</dd>
+            </dl>
+          </div>
+        </article>
       </li>
-      <li class="project">
-        <div class="project__head">
-          <h3 class="project__name"><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec">Marvis · Persona Spec</a></h3>
-          <span class="project__state">v3 · Python lint</span>
-        </div>
-        <p class="project__what">一份能被程序检查的人格规范：30 格台词位、20 条禁句、一个能跑的 lint 脚本、10 条基准测试。</p>
-        <p class="project__how">CI 里做两段式接入，先出灰阶报告，再上门禁。</p>
+      <li>
+        <article class="dossier">
+          <span class="seal" aria-hidden="true">格</span>
+          <div>
+            <h3 class="dossier__name"><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec">Marvis · Persona Spec</a></h3>
+            <p class="dossier__repo">yangyang2857-rgb/marvis-persona-spec</p>
+            <p class="dossier__what">
+              一份能被程序检查的人格规范：30 格台词位、20 条禁句、一个能跑的 lint 脚本、
+              10 条基准测试，外加 Fault Bloom 视觉系统。
+            </p>
+            <dl class="dossier__spec">
+              <dt>组成</dt><dd>Markdown 规范 + Python lint，规范与检查脚本同一个仓库</dd>
+              <dt>接入</dt><dd>CI 里两段式：先出灰阶报告，再上门禁</dd>
+              <dt>状态</dt><dd>v3</dd>
+            </dl>
+          </div>
+        </article>
       </li>
     </ul>
   </section>
 
-  <section class="section" id="way" aria-labelledby="way-title">
-    <h2 class="section__title" id="way-title">做事方式</h2>
+  <section class="sec" id="chain" aria-labelledby="chain-title">
+    <div class="sec__head">
+      <h2 class="sec__title" id="chain-title">一次构建经过哪四步</h2>
+      <p class="sec__note">以 OneStar 的命令行构建为例</p>
+    </div>
+    <p class="sec__lede">
+      没有 Gradle，四个工具按顺序打完一遍，出 APK。每一步都能单独跑、单独看输出，
+      出错时知道是资源、字节码还是签名的问题。
+    </p>
+
+    <ol class="chain">
+      <li class="chain__item">
+        <span class="chain__index">01</span>
+        <span class="chain__tool">aapt2</span>
+        <p class="chain__what">编译并链接资源，生成带资源表的容器</p>
+      </li>
+      <li class="chain__item">
+        <span class="chain__index">02</span>
+        <span class="chain__tool">javac</span>
+        <p class="chain__what">编译 Java 源码，产出 class 文件</p>
+      </li>
+      <li class="chain__item">
+        <span class="chain__index">03</span>
+        <span class="chain__tool">d8</span>
+        <p class="chain__what">把 class 转成 dex，打进容器</p>
+      </li>
+      <li class="chain__item">
+        <span class="chain__index">04</span>
+        <span class="chain__tool">apksigner</span>
+        <p class="chain__what">签名并校验，产出可安装的 APK</p>
+      </li>
+    </ol>
+
+    <p class="chain__aside">
+      JNI 那一层不在这条链上：它由 <code>zig cc</code> 单独编译成 .so，在 d8 之前放进同一次打包。
+      好处是构建脚本只有百来行，坏处是所有约定都得自己记住——所以构建规范写进了文档，而不是留在脑子里。
+    </p>
+  </section>
+
+  <section class="sec" id="way" aria-labelledby="way-title">
+    <div class="sec__head">
+      <h2 class="sec__title" id="way-title">做事方式</h2>
+    </div>
     <dl class="creed">
       <div class="creed__row">
         <dt class="creed__term">原生优先</dt>
@@ -362,36 +870,104 @@
     </dl>
   </section>
 
-  <section class="section" id="now" aria-labelledby="now-title">
-    <h2 class="section__title" id="now-title">最近</h2>
-    <dl class="log">
-      <div class="log__row">
-        <dt class="log__when">OneStar 0.12.x</dt>
-        <dd class="log__what">targetSdk 升到 37，签名与发布链路加固，16 KB 页对齐复核，大屏方向守卫。</dd>
-      </div>
-      <div class="log__row">
-        <dt class="log__when">moltdisk 0.1.0</dt>
-        <dd class="log__what">首个正式版：审计报告、why 子命令与证据链；删除能力在发布前被整段移除。</dd>
-      </div>
-      <div class="log__row">
-        <dt class="log__when">Persona Spec v3</dt>
-        <dd class="log__what">人格矩阵、禁句表与 lint 闸门成型，接入 CI 做灰阶观测。</dd>
-      </div>
-      <div class="log__row">
-        <dt class="log__when">工程文档</dt>
-        <dd class="log__what">构建规范、发版清单与跨平台开发约定持续补齐。</dd>
-      </div>
-    </dl>
+  <section class="sec" id="now" aria-labelledby="now-title">
+    <div class="sec__head">
+      <h2 class="sec__title" id="now-title">最近</h2>
+    </div>
+    <table class="log">
+      <caption class="sr-only">最近的工作记录</caption>
+      <thead>
+        <tr><th scope="col">方向</th><th scope="col">做了什么</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>OneStar 0.12.x</td>
+          <td>targetSdk 升到 37，签名与发布链路加固，16 KB 页对齐复核，大屏方向守卫。</td>
+        </tr>
+        <tr>
+          <td>moltdisk 0.1.0</td>
+          <td>首个正式版：审计报告、<code>why</code> 子命令与证据链；删除能力在发布前被整段移除。</td>
+        </tr>
+        <tr>
+          <td>Persona Spec v3</td>
+          <td>人格矩阵、禁句表与 lint 闸门成型，接入 CI 做灰阶观测。</td>
+        </tr>
+        <tr>
+          <td>工程文档</td>
+          <td>构建规范、发版清单与跨平台开发约定持续补齐。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="sec" id="status" aria-labelledby="status-title">
+    <div class="sec__head">
+      <h2 class="sec__title" id="status-title">构建状态</h2>
+      <p class="sec__note">点开可看每次运行的日志</p>
+    </div>
+    <p class="sec__lede">
+      五条工作流分别盯着四个仓库。仓库页上的徽章走外部图片请求，这里只留链接，页面本身不向外发任何请求。
+    </p>
+    <table class="status">
+      <caption class="sr-only">各仓库的 CI 工作流与运行记录链接</caption>
+      <thead>
+        <tr>
+          <th scope="col">仓库</th>
+          <th scope="col">工作流</th>
+          <th scope="col">运行记录</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>onestar</td>
+          <td><code>android.yml</code></td>
+          <td><a href="https://github.com/yangyang2857-rgb/onestar/actions/workflows/android.yml">打开</a></td>
+        </tr>
+        <tr>
+          <td>onestar</td>
+          <td><code>regression.yml</code></td>
+          <td><a href="https://github.com/yangyang2857-rgb/onestar/actions/workflows/regression.yml">打开</a></td>
+        </tr>
+        <tr>
+          <td>appfunction-guard</td>
+          <td><code>build.yml</code></td>
+          <td><a href="https://github.com/yangyang2857-rgb/appfunction-guard/actions/workflows/build.yml">打开</a></td>
+        </tr>
+        <tr>
+          <td>moltdisk</td>
+          <td><code>ci.yml</code></td>
+          <td><a href="https://github.com/yangyang2857-rgb/moltdisk/actions/workflows/ci.yml">打开</a></td>
+        </tr>
+        <tr>
+          <td>marvis-persona-spec</td>
+          <td><code>persona-lint.yml</code></td>
+          <td><a href="https://github.com/yangyang2857-rgb/marvis-persona-spec/actions/workflows/persona-lint.yml">打开</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="colophon" id="about" aria-labelledby="about-title">
+    <div>
+      <h2 class="colophon__title" id="about-title">关于这一页</h2>
+      <p>一个 HTML 文件，样式内联，没有脚本、没有字体下载、没有统计代码。断网也能完整读完，除了那几个指向 GitHub 的链接。</p>
+      <p>字体用系统的宋体系（宋体、思源宋体、Noto Serif SC 依次兜底），正文行宽约六十三个字符；深底是常态，这个工作室的东西多在夜里写完。</p>
+      <p>四个项目目前在个人账号下维护，等发布与协作链路稳定后再迁入本组织。</p>
+    </div>
+    <div>
+      <h2 class="colophon__title">去哪里找</h2>
+      <ul class="links">
+        <li><span>官网</span><a href="https://nightglean.github.io/">nightglean.github.io</a></li>
+        <li><span>组织</span><a href="https://github.com/nightglean">github.com/nightglean</a></li>
+        <li><span>作者</span><a href="https://github.com/yangyang2857-rgb">yangyang2857-rgb</a></li>
+        <li><span>个人站点</span><a href="https://yangyang2857-rgb.github.io">yangyang2857-rgb.github.io</a></li>
+        <li><span>问题与建议</span><a href="https://github.com/nightglean/.github/issues">在 .github 仓库提 Issue</a></li>
+      </ul>
+    </div>
   </section>
 
   <footer class="foot">
-    <ul class="foot__links">
-      <li><a href="https://github.com/nightglean">组织仓库</a></li>
-      <li><a href="https://github.com/yangyang2857-rgb">作者主页</a></li>
-      <li><a href="https://yangyang2857-rgb.github.io">个人站点</a></li>
-      <li><a href="https://github.com/nightglean/.github/issues">提个 Issue</a></li>
-    </ul>
-    <p class="foot__note">四个项目目前在个人账号下维护，待发布与协作链路稳定后迁入本组织。</p>
+    <p class="foot__note">四个项目里的许可各按仓库声明：目前明确的是 AppFunction Guard 与 moltdisk 采用 MIT。</p>
     <p class="foot__sig">长夜拾星 · 二〇二六</p>
   </footer>
 
